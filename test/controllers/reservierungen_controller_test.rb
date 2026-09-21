@@ -69,6 +69,18 @@ class ReservierungenControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "Warteliste: nach Stornierung sieht der wartende Benutzer sofort den 'Jetzt frei'-Hinweis (FR7)" do
+    # Fixtures: anna hat morgen_frueh reserviert, max steht bereits auf dessen Warteliste.
+    anmelden_als(benutzer(:anna))
+    delete reservierung_path(reservierungen(:anna_bucht_morgen_frueh))
+
+    max_session = open_session
+    max_session.post sitzung_path, params: { email: benutzer(:max).email, password: "geheim123" }
+    max_session.get reservierungen_path
+
+    assert_includes max_session.response.body, "Jetzt frei!"
+  end
+
   private
 
   def anmelden_als(benutzer)

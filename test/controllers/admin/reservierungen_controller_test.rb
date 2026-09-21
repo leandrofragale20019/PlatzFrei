@@ -1,6 +1,11 @@
 require "test_helper"
 
 class Admin::ReservierungenControllerTest < ActionDispatch::IntegrationTest
+  test "index ohne Anmeldung leitet auf Login um" do
+    get admin_reservierungen_path
+    assert_redirected_to new_sitzung_path
+  end
+
   test "index als mitglied ist verboten" do
     anmelden_als(benutzer(:anna))
 

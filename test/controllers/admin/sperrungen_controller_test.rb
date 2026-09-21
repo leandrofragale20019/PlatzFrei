@@ -1,6 +1,11 @@
 require "test_helper"
 
 class Admin::SperrungenControllerTest < ActionDispatch::IntegrationTest
+  test "new ohne Anmeldung leitet auf Login um" do
+    get new_admin_sperrung_path
+    assert_redirected_to new_sitzung_path
+  end
+
   test "new als mitglied ist verboten" do
     anmelden_als(benutzer(:anna))
 
