@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   resource :registrierung, only: %i[new create]
   resource :sitzung, only: %i[new create destroy]
+  resource :profil, controller: "profil", only: %i[show edit update]
 
   # Defines the root path route ("/")
   root "seiten#start"

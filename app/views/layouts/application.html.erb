@@ -29,6 +29,7 @@
 
       <% if angemeldet? %>
         <span>Angemeldet als <%= current_benutzer.name %></span>
+        <%= link_to "Profil", profil_path %>
         <%= button_to "Abmelden", sitzung_path, method: :delete %>
       <% else %>
         <%= link_to "Anmelden", new_sitzung_path %>

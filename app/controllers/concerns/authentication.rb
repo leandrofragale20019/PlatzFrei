@@ -20,6 +20,10 @@ module Authentication
     current_benutzer.present?
   end
 
+  def require_login
+    redirect_to new_sitzung_path, alert: "Bitte melde dich zuerst an." unless angemeldet?
+  end
+
   def anmelden(benutzer)
     reset_session
     session[:benutzer_id] = benutzer.id
