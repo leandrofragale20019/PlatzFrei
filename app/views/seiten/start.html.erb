@@ -1,0 +1,7 @@
+<h1>PlatzFrei</h1>
+
+<% if angemeldet? %>
+  <p>Angemeldet als <%= current_benutzer.name %>.</p>
+<% else %>
+  <p>Bitte melde dich an oder registriere dich, um Sportplätze zu reservieren.</p>
+<% end %>

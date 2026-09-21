@@ -24,6 +24,22 @@
   </head>
 
   <body>
+    <nav>
+      <%= link_to "PlatzFrei", root_path %>
+
+      <% if angemeldet? %>
+        <span>Angemeldet als <%= current_benutzer.name %></span>
+        <%= button_to "Abmelden", sitzung_path, method: :delete %>
+      <% else %>
+        <%= link_to "Anmelden", new_sitzung_path %>
+        <%= link_to "Registrieren", new_registrierung_path %>
+      <% end %>
+    </nav>
+
+    <% flash.each do |art, nachricht| %>
+      <p class="flash flash-<%= art %>"><%= nachricht %></p>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>

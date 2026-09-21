@@ -1,4 +1,6 @@
 class Benutzer < ApplicationRecord
+  has_secure_password
+
   enum :rolle, { mitglied: "mitglied", verantwortlicher: "verantwortlicher" }, default: :mitglied
 
   has_many :reservierungen, dependent: :restrict_with_error
@@ -7,4 +9,5 @@ class Benutzer < ApplicationRecord
 
   validates :name, presence: true
   validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :password, length: { minimum: 8 }, allow_nil: true
 end

@@ -2,8 +2,10 @@ anna:
   name: Anna Muster
   email: anna@example.com
   rolle: mitglied
+  password_digest: <%= BCrypt::Password.create("geheim123") %>
 
 max:
   name: Max Verantwortlich
   email: max@example.com
   rolle: verantwortlicher
+  password_digest: <%= BCrypt::Password.create("geheim123") %>

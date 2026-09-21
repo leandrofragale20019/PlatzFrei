@@ -1,0 +1,19 @@
+<h1>Anmelden</h1>
+
+<%= form_with url: sitzung_path do |form| %>
+  <div>
+    <%= form.label :email, "E-Mail" %>
+    <%= form.email_field :email %>
+  </div>
+
+  <div>
+    <%= form.label :password, "Passwort" %>
+    <%= form.password_field :password %>
+  </div>
+
+  <div>
+    <%= form.submit "Anmelden" %>
+  </div>
+<% end %>
+
+<%= link_to "Noch kein Konto? Registrieren", new_registrierung_path %>
