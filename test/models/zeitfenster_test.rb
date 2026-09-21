@@ -42,4 +42,66 @@ class ZeitfensterTest < ActiveSupport::TestCase
 
     assert gleiche_zeit_anderer_platz.valid?
   end
+
+  test "reserviert_von! legt eine Reservierung an und erhöht lock_version" do
+    zf = zeitfenster(:morgen_spaet)
+    alter_lock_version = zf.lock_version
+
+    reservierung = zf.reserviert_von!(benutzer(:anna))
+
+    assert reservierung.persisted?
+    assert_equal benutzer(:anna), reservierung.benutzer
+    assert_equal alter_lock_version + 1, zf.reload.lock_version
+  end
+
+  test "konkurrierende Reservierung desselben Zeitfensters: nur die erste gelingt" do
+    # Simuliert zwei Mitglieder, die dieselbe Detailseite gleichzeitig offen
+    # haben: beide laden das Zeitfenster mit demselben lock_version-Stand,
+    # bevor irgendjemand reserviert. Je nach Timing schlägt entweder der
+    # partielle Unique-Index (Schritt 1) oder lock_version zu — beide sind
+    # gültige Ausprägungen derselben Sicherheitsgarantie.
+    zf_fuer_anna = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
+    zf_fuer_max = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
+
+    zf_fuer_anna.reserviert_von!(benutzer(:anna))
+
+    assert_raises(ActiveRecord::StaleObjectError, ActiveRecord::RecordNotUnique) do
+      zf_fuer_max.reserviert_von!(benutzer(:max))
+    end
+
+    # Nur Annas Reservierung existiert, Zeitfenster hat weiterhin nur einen
+    # aktiven Reservierungs-Eintrag.
+    assert_equal 1, zeitfenster(:morgen_spaet).reload.reservierungen.reserviert.count
+    assert_equal benutzer(:anna), zeitfenster(:morgen_spaet).aktive_reservierung.benutzer
+  end
+
+  test "lock_version erkennt eine veraltete Zeitfenster-Referenz auch wenn der Unique-Index (noch) nicht greift" do
+    # Zeigt, dass die Sicherheit nicht nur vom Unique-Index kommt: Anna
+    # reserviert und storniert sofort wieder (Slot ist laut Index wieder
+    # frei), aber Max hält noch eine veraltete lock_version-Referenz von vor
+    # Annas Reservierung — sein Versuch muss trotzdem als Konflikt erkannt
+    # werden, weil er auf Basis veralteter Daten handelt.
+    zf_fuer_anna = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
+    zf_fuer_max = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
+
+    reservierung = zf_fuer_anna.reserviert_von!(benutzer(:anna))
+    reservierung.update!(status: :storniert)
+
+    assert_raises(ActiveRecord::StaleObjectError) do
+      zf_fuer_max.reserviert_von!(benutzer(:max))
+    end
+  end
+
+  test "frei-Scope schliesst gesperrte und bereits reservierte Zeitfenster aus" do
+    frei = Zeitfenster.frei
+
+    assert_includes frei, zeitfenster(:morgen_spaet)
+    assert_not_includes frei, zeitfenster(:morgen_gesperrt)
+    assert_not_includes frei, zeitfenster(:morgen_frueh)
+  end
+
+  test "aktive_reservierung liefert die reservierte Buchung oder nil" do
+    assert_equal reservierungen(:anna_bucht_morgen_frueh), zeitfenster(:morgen_frueh).aktive_reservierung
+    assert_nil zeitfenster(:morgen_spaet).aktive_reservierung
+  end
 end

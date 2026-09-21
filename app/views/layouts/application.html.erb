@@ -29,6 +29,8 @@
 
       <% if angemeldet? %>
         <span>Angemeldet als <%= current_benutzer.name %></span>
+        <%= link_to "Plätze", zeitfenster_path %>
+        <%= link_to "Meine Reservierungen", reservierungen_path %>
         <%= link_to "Profil", profil_path %>
         <% if current_benutzer.verantwortlicher? %>
           <%= link_to "Verwaltung", admin_benutzer_path %>

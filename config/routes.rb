@@ -21,6 +21,16 @@ Rails.application.routes.draw do
     get "benutzer/:id", to: "benutzer#show", as: :benutzer_zeigen
   end
 
+  # "zeitfenster" ist ebenfalls uncountable (siehe oben), gleiche Lösung.
+  # reservierungen/wartelisten sind korrekt dekliniert, daher normale
+  # resources; zeitfenster_id wird als Formularfeld statt als verschachtelte
+  # Route übergeben.
+  get "zeitfenster", to: "zeitfenster#index", as: :zeitfenster
+  get "zeitfenster/:id", to: "zeitfenster#show", as: :zeitfenster_zeigen
+
+  resources :reservierungen, only: %i[index create destroy]
+  resources :wartelisten, only: :create
+
   # Defines the root path route ("/")
   root "seiten#start"
 end

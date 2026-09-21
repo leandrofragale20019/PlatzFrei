@@ -4,3 +4,10 @@ anna_bucht_morgen_frueh:
   status: reserviert
   erstellt_am: <%= Time.current %>
   lock_version: 0
+
+max_bucht_halle_slot:
+  benutzer: max
+  zeitfenster: halle_slot
+  status: reserviert
+  erstellt_am: <%= Time.current %>
+  lock_version: 0

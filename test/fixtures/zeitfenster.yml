@@ -4,3 +4,24 @@ morgen_frueh:
   ende: <%= 1.day.from_now.beginning_of_hour + 1.hour %>
   lock_version: 0
   gesperrt: false
+
+morgen_spaet:
+  sportplatz: feld_eins
+  start: <%= 1.day.from_now.beginning_of_hour + 3.hours %>
+  ende: <%= 1.day.from_now.beginning_of_hour + 4.hours %>
+  lock_version: 0
+  gesperrt: false
+
+morgen_gesperrt:
+  sportplatz: feld_eins
+  start: <%= 1.day.from_now.beginning_of_hour + 5.hours %>
+  ende: <%= 1.day.from_now.beginning_of_hour + 6.hours %>
+  lock_version: 0
+  gesperrt: true
+
+halle_slot:
+  sportplatz: halle_eins
+  start: <%= 1.day.from_now.beginning_of_hour + 1.hour %>
+  ende: <%= 1.day.from_now.beginning_of_hour + 2.hours %>
+  lock_version: 0
+  gesperrt: false

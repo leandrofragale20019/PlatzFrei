@@ -1,0 +1,26 @@
+<h1><%= @zeitfenster.sportplatz.name %></h1>
+
+<p><strong>Sportart:</strong> <%= @zeitfenster.sportplatz.sportart %></p>
+<p><strong>Zeit:</strong> <%= @zeitfenster.start.strftime("%d.%m.%Y %H:%M") %>–<%= @zeitfenster.ende.strftime("%H:%M") %></p>
+
+<% if @zeitfenster.gesperrt? %>
+  <p>Dieser Platz ist für diesen Zeitraum gesperrt.</p>
+<% elsif @zeitfenster.aktive_reservierung.present? %>
+  <p>Dieses Zeitfenster ist bereits reserviert.</p>
+
+  <% if @bereits_auf_warteliste %>
+    <p>Du stehst bereits auf der Warteliste für dieses Zeitfenster.</p>
+  <% else %>
+    <%= form_with url: wartelisten_path, method: :post do %>
+      <%= hidden_field_tag :zeitfenster_id, @zeitfenster.id %>
+      <%= submit_tag "Auf Warteliste setzen" %>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= form_with url: reservierungen_path, method: :post do %>
+    <%= hidden_field_tag :zeitfenster_id, @zeitfenster.id %>
+    <%= submit_tag "Reservieren", data: { turbo_confirm: "Zeitfenster am #{@zeitfenster.start.strftime('%d.%m.%Y %H:%M')} verbindlich reservieren?" } %>
+  <% end %>
+<% end %>
+
+<%= link_to "Zurück zur Übersicht", zeitfenster_path %>

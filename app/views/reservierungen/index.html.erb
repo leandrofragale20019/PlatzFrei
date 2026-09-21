@@ -1,0 +1,50 @@
+<h1>Meine Reservierungen</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Sportplatz</th>
+      <th>Zeit</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @reservierungen.each do |reservierung| %>
+      <tr>
+        <td><%= reservierung.zeitfenster.sportplatz.name %></td>
+        <td><%= reservierung.zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></td>
+        <td>
+          <%= button_to "Stornieren", reservierung_path(reservierung), method: :delete,
+                data: { turbo_confirm: "Reservierung wirklich stornieren?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h2>Meine Warteliste</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Sportplatz</th>
+      <th>Zeit</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @wartelisten.each do |eintrag| %>
+      <tr>
+        <td><%= eintrag.zeitfenster.sportplatz.name %></td>
+        <td><%= eintrag.zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></td>
+        <td>
+          <% if !eintrag.zeitfenster.gesperrt? && eintrag.zeitfenster.aktive_reservierung.blank? %>
+            Jetzt frei! <%= link_to "Jetzt reservieren", zeitfenster_zeigen_path(eintrag.zeitfenster) %>
+          <% else %>
+            Wartend
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

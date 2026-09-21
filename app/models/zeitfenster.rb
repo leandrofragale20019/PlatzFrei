@@ -8,6 +8,26 @@ class Zeitfenster < ApplicationRecord
   validate :ende_nach_start
   validate :keine_ueberlappung
 
+  scope :frei, -> { where(gesperrt: false).where.not(id: Reservierung.reserviert.select(:zeitfenster_id)) }
+
+  def aktive_reservierung
+    reservierungen.detect(&:reserviert?)
+  end
+
+  # Legt die Reservierung an und "berührt" danach das Zeitfenster selbst in
+  # derselben Transaktion, damit Rails' Optimistic Locking (lock_version)
+  # greift: hat sich das Zeitfenster seit dem Laden bereits geändert (weil
+  # jemand anderes zwischenzeitlich reserviert hat), wirft touch
+  # ActiveRecord::StaleObjectError. Ein reines INSERT in reservierungen
+  # allein würde lock_version auf zeitfenster nicht prüfen.
+  def reserviert_von!(benutzer)
+    transaction do
+      reservierung = reservierungen.create!(benutzer: benutzer, erstellt_am: Time.current)
+      touch
+      reservierung
+    end
+  end
+
   private
 
   def ende_nach_start

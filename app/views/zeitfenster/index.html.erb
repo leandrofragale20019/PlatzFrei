@@ -1,0 +1,48 @@
+<h1>Platzübersicht</h1>
+
+<%= form_with url: zeitfenster_path, method: :get do |f| %>
+  <div>
+    <%= f.label :datum, "Datum" %>
+    <%= f.date_field :datum, value: @datum %>
+  </div>
+
+  <div>
+    <%= f.label :sportart, "Sportart" %>
+    <%= f.select :sportart, options_for_select(@sportarten, @sportart), include_blank: "Alle Sportarten" %>
+  </div>
+
+  <div>
+    <%= f.submit "Filtern" %>
+  </div>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Sportplatz</th>
+      <th>Sportart</th>
+      <th>Zeit</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @zeitfenster.each do |zeitfenster| %>
+      <tr>
+        <td><%= zeitfenster.sportplatz.name %></td>
+        <td><%= zeitfenster.sportplatz.sportart %></td>
+        <td><%= zeitfenster.start.strftime("%H:%M") %>–<%= zeitfenster.ende.strftime("%H:%M") %></td>
+        <td>
+          <% if zeitfenster.gesperrt? %>
+            Gesperrt
+          <% elsif zeitfenster.aktive_reservierung.present? %>
+            Reserviert
+          <% else %>
+            Frei
+          <% end %>
+        </td>
+        <td><%= link_to "Details", zeitfenster_zeigen_path(zeitfenster) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
