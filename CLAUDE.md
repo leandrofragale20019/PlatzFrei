@@ -94,6 +94,8 @@ Work through these steps **one at a time, in this order**. After finishing a ste
 3. **Benutzerprofil** — view/edit own profile; only the logged-in user may edit their own.
 4. **Benutzerverwaltung** — `Admin::` namespace, list/view users. No access restriction yet (that's step 5).
 5. **Benutzerrollen und Berechtigungen** — role-based access per the roles table above; lock down the `Admin::` namespace to `Platzverantwortliche/r` only.
-6. **Kernfunktion** — reservation creation/cancellation/waitlist flows. This is where quality attribute 1 (optimistic locking, concurrent reservation conflict) must be implemented and tested with a concurrency test, not just a happy-path test.
+6. **Kernfunktion** — reservation creation/cancellation/waitlist flows. This is where quality attribute 1 (optimistic locking, concurrent reservation conflict) must be implemented and tested with a concurrency test, not just a happy-path test. UI dazu: Platzübersicht mit Kalenderansicht (Filter nach
+   Sportart/Datum), Reservierungsdetail mit Bestätigungsdialog, "Meine
+   Reservierungen" mit Stornier-Optio
 7. **Aktivitätsprotokoll** — `Protokoll` model + the two atomic transactions described above (reservation+log, closure+cancellations+notifications+log).
 8. **Testing** — test suite specifically targeting the quality attributes above (concurrent reservation conflict, transaction integrity on closure, role-gated admin access, logging), not just CRUD happy paths.
