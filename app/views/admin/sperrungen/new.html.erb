@@ -1,0 +1,24 @@
+<h1>Platz sperren</h1>
+
+<p>Bestehende Reservierungen im gewählten Zeitraum werden automatisch storniert; betroffene Mitglieder sehen das sofort unter "Meine Reservierungen".</p>
+
+<%= form_with url: admin_sperrung_path, method: :post do %>
+  <div>
+    <%= label_tag :sportplatz_id, "Sportplatz" %>
+    <%= select_tag :sportplatz_id, options_from_collection_for_select(@sportplaetze, :id, :name) %>
+  </div>
+
+  <div>
+    <%= label_tag :von, "Von" %>
+    <%= datetime_field_tag :von %>
+  </div>
+
+  <div>
+    <%= label_tag :bis, "Bis" %>
+    <%= datetime_field_tag :bis %>
+  </div>
+
+  <div>
+    <%= submit_tag "Sperren", data: { turbo_confirm: "Platz für diesen Zeitraum wirklich sperren? Bestehende Reservierungen werden storniert." } %>
+  </div>
+<% end %>

@@ -9,5 +9,6 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.irregular "warteliste", "wartelisten"
   inflect.irregular "registrierung", "registrierungen"
   inflect.irregular "sitzung", "sitzungen"
+  inflect.irregular "sperrung", "sperrungen"
   inflect.uncountable %w[zeitfenster benutzer]
 end

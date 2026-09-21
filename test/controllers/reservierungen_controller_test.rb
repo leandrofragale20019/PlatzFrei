@@ -48,13 +48,17 @@ class ReservierungenControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: zeitfenster(:morgen_frueh).sportplatz.name
   end
 
-  test "destroy storniert die eigene Reservierung" do
+  test "destroy storniert die eigene Reservierung und protokolliert sie" do
     anmelden_als(benutzer(:anna))
+    reservierung = reservierungen(:anna_bucht_morgen_frueh)
 
-    delete reservierung_path(reservierungen(:anna_bucht_morgen_frueh))
+    delete reservierung_path(reservierung)
 
     assert_redirected_to reservierungen_path
-    assert_equal "storniert", reservierungen(:anna_bucht_morgen_frueh).reload.status
+    assert_equal "storniert", reservierung.reload.status
+
+    protokoll = reservierung.protokolle.find_by!(aktion: :storniert)
+    assert_equal benutzer(:anna), protokoll.akteur
   end
 
   test "destroy einer fremden Reservierung liefert 404" do

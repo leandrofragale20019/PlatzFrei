@@ -32,4 +32,28 @@ class ReservierungTest < ActiveSupport::TestCase
     zweite = Reservierung.new(benutzer: benutzer(:max), zeitfenster: aktive.zeitfenster, erstellt_am: Time.current)
     assert zweite.save
   end
+
+  test "stornieren! setzt den Status und protokolliert mit Standard-Aktion storniert" do
+    # anna_bucht_morgen_frueh hat laut Fixture bereits einen "erstellt"-Eintrag
+    # (Schritt 1) — stornieren! muss zusätzlich einen "storniert"-Eintrag anlegen.
+    reservierung = reservierungen(:anna_bucht_morgen_frueh)
+
+    assert_difference("reservierung.protokolle.count", 1) do
+      reservierung.stornieren!(akteur: benutzer(:anna))
+    end
+
+    assert_equal "storniert", reservierung.reload.status
+    protokoll = reservierung.protokolle.find_by!(aktion: :storniert)
+    assert_equal benutzer(:anna), protokoll.akteur
+  end
+
+  test "stornieren! erlaubt einen abweichenden Akteur und eine andere Aktion" do
+    reservierung = reservierungen(:anna_bucht_morgen_frueh)
+
+    reservierung.stornieren!(akteur: benutzer(:max), aktion: :geschlossen)
+
+    protokoll = reservierung.protokolle.find_by!(aktion: :geschlossen)
+    assert_equal benutzer(:max), protokoll.akteur
+    assert_not_equal protokoll.akteur, reservierung.benutzer
+  end
 end

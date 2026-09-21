@@ -19,6 +19,10 @@ Rails.application.routes.draw do
   namespace :admin do
     get "benutzer", to: "benutzer#index", as: :benutzer
     get "benutzer/:id", to: "benutzer#show", as: :benutzer_zeigen
+
+    resources :reservierungen, only: %i[index destroy]
+    resources :protokolle, only: :index
+    resource :sperrung, only: %i[new create]
   end
 
   # "zeitfenster" ist ebenfalls uncountable (siehe oben), gleiche Lösung.

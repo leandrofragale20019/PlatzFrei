@@ -34,6 +34,9 @@
         <%= link_to "Profil", profil_path %>
         <% if current_benutzer.verantwortlicher? %>
           <%= link_to "Verwaltung", admin_benutzer_path %>
+          <%= link_to "Alle Reservierungen", admin_reservierungen_path %>
+          <%= link_to "Protokoll", admin_protokolle_path %>
+          <%= link_to "Platz sperren", new_admin_sperrung_path %>
         <% end %>
         <%= button_to "Abmelden", sitzung_path, method: :delete %>
       <% else %>

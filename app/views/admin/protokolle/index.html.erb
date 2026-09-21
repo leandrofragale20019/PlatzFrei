@@ -1,0 +1,26 @@
+<h1>Aktivitätsprotokoll</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Zeitpunkt</th>
+      <th>Aktion</th>
+      <th>Akteur</th>
+      <th>Mitglied</th>
+      <th>Sportplatz</th>
+      <th>Zeit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @protokolle.each do |protokoll| %>
+      <tr>
+        <td><%= protokoll.zeitpunkt.strftime("%d.%m.%Y %H:%M") %></td>
+        <td><%= protokoll.aktion %></td>
+        <td><%= protokoll.akteur.name %></td>
+        <td><%= protokoll.reservierung.benutzer.name %></td>
+        <td><%= protokoll.reservierung.zeitfenster.sportplatz.name %></td>
+        <td><%= protokoll.reservierung.zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

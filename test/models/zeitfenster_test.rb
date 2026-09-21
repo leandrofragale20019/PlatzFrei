@@ -54,6 +54,30 @@ class ZeitfensterTest < ActiveSupport::TestCase
     assert_equal alter_lock_version + 1, zf.reload.lock_version
   end
 
+  test "reserviert_von! protokolliert die Reservierung atomar" do
+    zf = zeitfenster(:morgen_spaet)
+
+    reservierung = zf.reserviert_von!(benutzer(:anna))
+
+    protokoll = reservierung.protokolle.sole
+    assert_equal "erstellt", protokoll.aktion
+    assert_equal benutzer(:anna), protokoll.akteur
+  end
+
+  test "bei einem Konflikt wird kein Protokoll-Eintrag geschrieben" do
+    zf_fuer_anna = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
+    zf_fuer_max = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
+
+    zf_fuer_anna.reserviert_von!(benutzer(:anna))
+
+    assert_raises(ActiveRecord::StaleObjectError, ActiveRecord::RecordNotUnique) do
+      zf_fuer_max.reserviert_von!(benutzer(:max))
+    end
+
+    assert_equal 1, Protokoll.where(reservierung: zeitfenster(:morgen_spaet).reload.aktive_reservierung).count
+    assert_not Protokoll.exists?(akteur: benutzer(:max))
+  end
+
   test "konkurrierende Reservierung desselben Zeitfensters: nur die erste gelingt" do
     # Simuliert zwei Mitglieder, die dieselbe Detailseite gleichzeitig offen
     # haben: beide laden das Zeitfenster mit demselben lock_version-Stand,

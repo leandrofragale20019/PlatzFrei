@@ -24,6 +24,7 @@ class Zeitfenster < ApplicationRecord
     transaction do
       reservierung = reservierungen.create!(benutzer: benutzer, erstellt_am: Time.current)
       touch
+      reservierung.protokolle.create!(akteur: benutzer, aktion: :erstellt, zeitpunkt: Time.current)
       reservierung
     end
   end

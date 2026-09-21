@@ -22,7 +22,7 @@ class ReservierungenController < ApplicationController
 
   def destroy
     reservierung = current_benutzer.reservierungen.find(params[:id])
-    reservierung.update!(status: :storniert)
+    reservierung.stornieren!(akteur: current_benutzer)
     redirect_to reservierungen_path, notice: "Reservierung storniert."
   end
 
