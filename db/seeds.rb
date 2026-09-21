@@ -26,4 +26,23 @@ sportplaetze = [
   end
 end
 
+unless Rails.env.production?
+  # Demo-Konten für Dev/Test — nie in Production seeden (bekanntes Passwort).
+  Benutzer.find_or_create_by!(email: "mitglied@platzfrei.ch") do |b|
+    b.name = "Mia Mitglied"
+    b.password = "geheim123"
+    b.password_confirmation = "geheim123"
+    b.rolle = "mitglied"
+  end
+
+  Benutzer.find_or_create_by!(email: "admin@platzfrei.ch") do |b|
+    b.name = "Vera Verantwortlich"
+    b.password = "geheim123"
+    b.password_confirmation = "geheim123"
+    b.rolle = "verantwortlicher"
+  end
+
+  puts "Demo-Konten: mitglied@platzfrei.ch / admin@platzfrei.ch (Passwort: geheim123)"
+end
+
 puts "#{Sportplatz.count} Sportplätze, #{Zeitfenster.count} Zeitfenster."
