@@ -13,6 +13,14 @@ Rails.application.routes.draw do
   resource :sitzung, only: %i[new create destroy]
   resource :profil, controller: "profil", only: %i[show edit update]
 
+  # "benutzer" ist uncountable (siehe config/initializers/inflections.rb) — ein
+  # resources :benutzer würde für index und show denselben Route-Namen
+  # (admin_benutzer_path) erzeugen und kollidieren, daher explizite Routen.
+  namespace :admin do
+    get "benutzer", to: "benutzer#index", as: :benutzer
+    get "benutzer/:id", to: "benutzer#show", as: :benutzer_zeigen
+  end
+
   # Defines the root path route ("/")
   root "seiten#start"
 end

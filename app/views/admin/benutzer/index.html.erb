@@ -1,0 +1,22 @@
+<h1>Benutzerverwaltung</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>E-Mail</th>
+      <th>Rolle</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @benutzer.each do |benutzer| %>
+      <tr>
+        <td><%= benutzer.name %></td>
+        <td><%= benutzer.email %></td>
+        <td><%= benutzer.rolle %></td>
+        <td><%= link_to "Details", admin_benutzer_zeigen_path(benutzer) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,7 @@
+<h1><%= @benutzer.name %></h1>
+
+<p><strong>E-Mail:</strong> <%= @benutzer.email %></p>
+<p><strong>Rolle:</strong> <%= @benutzer.rolle %></p>
+<p><strong>Mitglied seit:</strong> <%= @benutzer.created_at.strftime("%d.%m.%Y") %></p>
+
+<%= link_to "Zurück zur Übersicht", admin_benutzer_path %>
