@@ -24,6 +24,10 @@ module Authentication
     redirect_to new_sitzung_path, alert: "Bitte melde dich zuerst an." unless angemeldet?
   end
 
+  def require_verantwortlicher
+    redirect_to root_path, alert: "Kein Zugriff." unless current_benutzer&.verantwortlicher?
+  end
+
   def anmelden(benutzer)
     reset_session
     session[:benutzer_id] = benutzer.id

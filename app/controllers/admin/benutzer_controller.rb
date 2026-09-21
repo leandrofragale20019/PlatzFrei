@@ -1,4 +1,4 @@
-class Admin::BenutzerController < ApplicationController
+class Admin::BenutzerController < Admin::BaseController
   def index
     @benutzer = Benutzer.order(:name)
   end
