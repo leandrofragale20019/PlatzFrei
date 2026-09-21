@@ -1,0 +1,6 @@
+morgen_frueh:
+  sportplatz: feld_eins
+  start: <%= 1.day.from_now.beginning_of_hour %>
+  ende: <%= 1.day.from_now.beginning_of_hour + 1.hour %>
+  lock_version: 0
+  gesperrt: false

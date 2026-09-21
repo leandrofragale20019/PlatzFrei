@@ -1,16 +1,10 @@
-# Be sure to restart your server when you modify this file.
-
-# Add new inflection rules using the following format. Inflections
-# are locale specific, and you may define rules for as many different
-# locales as you wish. All of these examples are active by default:
-# ActiveSupport::Inflector.inflections(:en) do |inflect|
-#   inflect.plural /^(ox)$/i, "\\1en"
-#   inflect.singular /^(ox)en/i, "\\1"
-#   inflect.irregular "person", "people"
-#   inflect.uncountable %w( fish sheep )
-# end
-
-# These inflection rules are supported but not enabled by default:
-# ActiveSupport::Inflector.inflections(:en) do |inflect|
-#   inflect.acronym "RESTful"
-# end
+# Deutsche Pluralformen für die PlatzFrei-Domänenbegriffe, damit Tabellennamen
+# und Assoziationen korrektes Deutsch verwenden (z.B. sportplatz.zeitfenster,
+# sportplatz.wartelisten) statt Rails' englischer Standardpluralisierung.
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular "sportplatz", "sportplaetze"
+  inflect.irregular "reservierung", "reservierungen"
+  inflect.irregular "protokoll", "protokolle"
+  inflect.irregular "warteliste", "wartelisten"
+  inflect.uncountable %w[zeitfenster benutzer]
+end

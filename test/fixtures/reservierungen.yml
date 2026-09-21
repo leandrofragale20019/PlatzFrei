@@ -1,0 +1,6 @@
+anna_bucht_morgen_frueh:
+  benutzer: anna
+  zeitfenster: morgen_frueh
+  status: reserviert
+  erstellt_am: <%= Time.current %>
+  lock_version: 0

@@ -1,0 +1,5 @@
+anna_reservierung_erstellt:
+  reservierung: anna_bucht_morgen_frueh
+  akteur: anna
+  aktion: erstellt
+  zeitpunkt: <%= Time.current %>
