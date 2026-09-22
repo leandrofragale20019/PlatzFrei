@@ -1,6 +1,23 @@
 module ApplicationHelper
+  MONATSNAMEN = %w[Januar Februar März April Mai Juni Juli August September Oktober November Dezember].freeze
+
   def form_input_classes(errors)
     class_names("form-input", "form-input-error" => errors.present?)
+  end
+
+  # "September 2026" — German month label, independent of the app's I18n locale.
+  def monatsname(date)
+    "#{MONATSNAMEN[date.month - 1]} #{date.year}"
+  end
+
+  # The month the calendar should render. Driven purely by the view-only
+  # `monat` param (so month navigation never changes the selected day); falls
+  # back to the month of the selected date.
+  def angezeigter_monat(fallback)
+    wert = params[:monat].presence
+    (wert ? Date.parse(wert) : fallback).beginning_of_month
+  rescue Date::Error, ArgumentError
+    fallback.beginning_of_month
   end
 
   # Primary navigation for a logged-in member (facility managers see these too).

@@ -1,29 +1,40 @@
 <% content_for :title, "Platzübersicht – PlatzFrei" %>
 
+<% angezeigt = angezeigter_monat(@datum) %>
+<%
+  sportart_pille = lambda do |aktiv|
+    class_names(
+      "rounded-full px-4 py-2 text-sm font-medium no-underline ring-1 ring-inset transition-all duration-300 hover:no-underline",
+      aktiv ? "bg-neutral-900 text-white ring-transparent hover:bg-neutral-900 hover:text-white" :
+              "bg-white/60 text-neutral-700 ring-neutral-900/10 backdrop-blur-md hover:-translate-y-px hover:bg-white hover:text-neutral-900"
+    )
+  end
+%>
+
 <%= render "shared/page_header",
       eyebrow: "Platzübersicht",
       title: "Freie Zeitfenster finden",
       description: "Wähle Datum und Sportart — reservierte Slots verschwinden in Echtzeit aus der Liste." %>
 
-<%= render "shared/card", class: "mb-8", core_class: "!p-4 sm:!p-5" do %>
-  <%= form_with url: zeitfenster_path, method: :get, class: "flex flex-col gap-4 sm:flex-row sm:items-end" do |f| %>
-    <div class="flex-1">
-      <%= f.label :datum, "Datum", class: "form-label" %>
-      <%= f.date_field :datum, value: @datum, class: "form-input" %>
-    </div>
+<div class="mb-10 grid gap-4 lg:grid-cols-3 lg:items-start">
+  <div class="lg:col-span-2">
+    <%= render "zeitfenster/kalender", angezeigt: angezeigt, datum: @datum, sportart: @sportart %>
+  </div>
 
-    <div class="flex-1">
-      <%= f.label :sportart, "Sportart", class: "form-label" %>
-      <%= f.select :sportart, options_for_select(@sportarten, @sportart), { include_blank: "Alle Sportarten" }, class: "form-input" %>
+  <%= render "shared/card", core_class: "p-5 sm:p-6" do %>
+    <h3 class="mb-4 text-sm font-bold uppercase tracking-[0.12em] text-neutral-500">Sportart</h3>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to "Alle", zeitfenster_path(datum: @datum.iso8601, monat: angezeigt.iso8601), class: sportart_pille.call(@sportart.nil?) %>
+      <% @sportarten.each do |sportart| %>
+        <%= link_to sportart, zeitfenster_path(datum: @datum.iso8601, sportart: sportart, monat: angezeigt.iso8601), class: sportart_pille.call(@sportart == sportart) %>
+      <% end %>
     </div>
-
-    <%= render "shared/button", label: "Filtern", variant: :primary, icon: :arrow %>
   <% end %>
-<% end %>
+</div>
 
 <div class="mb-5 flex flex-wrap items-center gap-3">
-  <span class="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-sm font-semibold text-neutral-700 ring-1 ring-inset ring-neutral-900/[0.07] tabular-nums">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-4 text-primary-600"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+  <span class="inline-flex items-center gap-2 rounded-full bg-white/60 px-4 py-2 text-sm font-semibold text-neutral-800 ring-1 ring-inset ring-white/60 backdrop-blur-md tabular-nums">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-4 text-primary-600"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
     <%= @datum.strftime("%d.%m.%Y") %>
   </span>
   <span class="text-sm text-neutral-500"><%= pluralize(@zeitfenster.size, "Zeitfenster") %></span>
@@ -53,12 +64,8 @@
             <td class="tabular-nums"><%= zeitfenster.start.strftime("%H:%M") %>–<%= zeitfenster.ende.strftime("%H:%M") %></td>
             <td><%= render "zeitfenster/status_badge", zeitfenster: zeitfenster %></td>
             <td class="text-right">
-              <%= link_to zeitfenster_zeigen_path(zeitfenster), class: "group inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 no-underline transition-colors duration-200 ease-fluid hover:underline" do %>
-                Details
-                <span class="flex size-5 items-center justify-center rounded-full bg-primary-600/10 transition-transform duration-300 ease-fluid group-hover:translate-x-0.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-3"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                </span>
-              <% end %>
+              <%= link_to "Details", zeitfenster_zeigen_path(zeitfenster),
+                    class: "inline-flex items-center gap-1.5 rounded-full bg-white/60 px-3.5 py-1.5 text-sm font-semibold text-primary-700 no-underline ring-1 ring-inset ring-neutral-900/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-px hover:bg-white hover:no-underline" %>
             </td>
           </tr>
         <% end %>
