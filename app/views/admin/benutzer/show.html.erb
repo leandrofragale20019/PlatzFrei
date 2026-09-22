@@ -1,7 +1,28 @@
-<h1><%= @benutzer.name %></h1>
+<% content_for :title, "#{@benutzer.name} – Verwaltung" %>
 
-<p><strong>E-Mail:</strong> <%= @benutzer.email %></p>
-<p><strong>Rolle:</strong> <%= @benutzer.rolle %></p>
-<p><strong>Mitglied seit:</strong> <%= @benutzer.created_at.strftime("%d.%m.%Y") %></p>
+<div class="mx-auto max-w-2xl">
+  <%= link_to admin_benutzer_path, class: "link-muted mb-5 inline-flex items-center gap-1" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+    Zurück zur Übersicht
+  <% end %>
 
-<%= link_to "Zurück zur Übersicht", admin_benutzer_path %>
+  <%= render "shared/card" do %>
+    <div class="mb-6 flex items-center gap-4 border-b border-neutral-100 pb-6">
+      <div class="flex size-14 items-center justify-center rounded-2xl bg-neutral-200 text-xl font-bold text-neutral-600">
+        <%= @benutzer.name.first&.upcase %>
+      </div>
+      <div>
+        <p class="text-lg font-bold text-neutral-900"><%= @benutzer.name %></p>
+        <div class="mt-1">
+          <%= render "shared/badge",
+                label: @benutzer.verantwortlicher? ? "Platzverantwortliche/r" : "Vereinsmitglied",
+                variant: @benutzer.verantwortlicher? ? :primary : :neutral %>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/detail_row", label: "E-Mail" do %><%= @benutzer.email %><% end %>
+    <%= render "shared/detail_row", label: "Rolle" do %><%= @benutzer.verantwortlicher? ? "Platzverantwortliche/r" : "Vereinsmitglied" %><% end %>
+    <%= render "shared/detail_row", label: "Mitglied seit" do %><span class="tabular-nums"><%= @benutzer.created_at.strftime("%d.%m.%Y") %></span><% end %>
+  <% end %>
+</div>

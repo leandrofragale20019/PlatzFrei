@@ -1,7 +1,27 @@
-<h1>Mein Profil</h1>
+<% content_for :title, "Mein Profil – PlatzFrei" %>
 
-<p><strong>Name:</strong> <%= @benutzer.name %></p>
-<p><strong>E-Mail:</strong> <%= @benutzer.email %></p>
-<p><strong>Rolle:</strong> <%= @benutzer.rolle %></p>
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: "Mein Profil", description: "Deine Kontodaten und Rolle im Verein." do %>
+    <%= render "shared/button", label: "Bearbeiten", variant: :secondary, href: edit_profil_path %>
+  <% end %>
 
-<%= link_to "Bearbeiten", edit_profil_path %>
+  <%= render "shared/card" do %>
+    <div class="mb-6 flex items-center gap-4 border-b border-neutral-100 pb-6">
+      <div class="flex size-14 items-center justify-center rounded-2xl bg-primary-600 text-xl font-bold text-white shadow-sm shadow-primary-600/30">
+        <%= @benutzer.name.first&.upcase %>
+      </div>
+      <div>
+        <p class="text-lg font-bold text-neutral-900"><%= @benutzer.name %></p>
+        <div class="mt-1">
+          <%= render "shared/badge",
+                label: @benutzer.verantwortlicher? ? "Platzverantwortliche/r" : "Vereinsmitglied",
+                variant: @benutzer.verantwortlicher? ? :primary : :neutral %>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/detail_row", label: "Name" do %><%= @benutzer.name %><% end %>
+    <%= render "shared/detail_row", label: "E-Mail" do %><%= @benutzer.email %><% end %>
+    <%= render "shared/detail_row", label: "Rolle" do %><%= @benutzer.verantwortlicher? ? "Platzverantwortliche/r" : "Vereinsmitglied" %><% end %>
+  <% end %>
+</div>

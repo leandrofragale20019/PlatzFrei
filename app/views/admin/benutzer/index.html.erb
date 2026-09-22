@@ -1,22 +1,59 @@
-<h1>Benutzerverwaltung</h1>
+<% content_for :title, "Benutzer – Verwaltung" %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>E-Mail</th>
-      <th>Rolle</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
+<%= render "shared/page_header",
+      eyebrow: "Verwaltung",
+      title: "Benutzer",
+      description: "Alle registrierten Mitglieder und Platzverantwortlichen." %>
+
+<% if @benutzer.empty? %>
+  <%= render "shared/empty_state",
+        icon: "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z",
+        title: "Noch keine Benutzer",
+        description: "Sobald sich Mitglieder registrieren, erscheinen sie hier." %>
+<% else %>
+  <div class="panel hidden md:block">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">E-Mail</th>
+          <th scope="col">Rolle</th>
+          <th scope="col"><span class="sr-only">Details</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @benutzer.each do |benutzer| %>
+          <tr>
+            <td class="cell-strong"><%= benutzer.name %></td>
+            <td><%= benutzer.email %></td>
+            <td>
+              <%= render "shared/badge",
+                    label: benutzer.verantwortlicher? ? "Platzverantwortliche/r" : "Vereinsmitglied",
+                    variant: benutzer.verantwortlicher? ? :primary : :neutral %>
+            </td>
+            <td class="text-right">
+              <%= link_to "Details", admin_benutzer_zeigen_path(benutzer), class: "text-sm font-semibold text-primary-700 no-underline hover:underline" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <ul class="space-y-3 md:hidden">
     <% @benutzer.each do |benutzer| %>
-      <tr>
-        <td><%= benutzer.name %></td>
-        <td><%= benutzer.email %></td>
-        <td><%= benutzer.rolle %></td>
-        <td><%= link_to "Details", admin_benutzer_zeigen_path(benutzer) %></td>
-      </tr>
+      <li>
+        <%= link_to admin_benutzer_zeigen_path(benutzer), class: "flex items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 no-underline hover:border-primary-300 hover:no-underline" do %>
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-sm font-bold text-neutral-600"><%= benutzer.name.first&.upcase %></span>
+          <span class="min-w-0 flex-1">
+            <span class="block truncate font-semibold text-neutral-900"><%= benutzer.name %></span>
+            <span class="block truncate text-sm text-neutral-500"><%= benutzer.email %></span>
+          </span>
+          <%= render "shared/badge",
+                label: benutzer.verantwortlicher? ? "Verantwortlich" : "Mitglied",
+                variant: benutzer.verantwortlicher? ? :primary : :neutral %>
+        <% end %>
+      </li>
     <% end %>
-  </tbody>
-</table>
+  </ul>
+<% end %>

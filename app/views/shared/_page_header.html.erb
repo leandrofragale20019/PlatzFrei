@@ -1,0 +1,26 @@
+<%#
+  Consistent page header used at the top of every page: title, optional
+  description, and an optional right-aligned actions slot (pass a block).
+
+  Locals:
+    title:       page title (required)
+    description: optional supporting line under the title
+    eyebrow:     optional small label above the title (e.g. section name)
+  Block: optional action(s) shown on the right (desktop) / below (mobile).
+%>
+<% actions = capture { yield } if block_given? %>
+<div class="mb-8 flex flex-col gap-4 border-b border-neutral-200/70 pb-6 sm:flex-row sm:items-end sm:justify-between">
+  <div class="space-y-1.5">
+    <% if local_assigns[:eyebrow].present? %>
+      <p class="text-xs font-semibold uppercase tracking-wider text-primary-600"><%= eyebrow %></p>
+    <% end %>
+    <h1><%= title %></h1>
+    <% if local_assigns[:description].present? %>
+      <p class="max-w-prose text-sm text-neutral-500"><%= description %></p>
+    <% end %>
+  </div>
+
+  <% if actions.present? %>
+    <div class="flex shrink-0 items-center gap-2"><%= actions %></div>
+  <% end %>
+</div>

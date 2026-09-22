@@ -1,0 +1,8 @@
+<%# Locals: zeitfenster %>
+<% if zeitfenster.gesperrt? %>
+  <%= render "shared/badge", label: "Gesperrt", variant: :neutral %>
+<% elsif zeitfenster.aktive_reservierung.present? %>
+  <%= render "shared/badge", label: "Reserviert", variant: :warning %>
+<% else %>
+  <%= render "shared/badge", label: "Frei", variant: :success %>
+<% end %>

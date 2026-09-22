@@ -1,26 +1,54 @@
-<h1><%= @zeitfenster.sportplatz.name %></h1>
+<% content_for :title, "#{@zeitfenster.sportplatz.name} – PlatzFrei" %>
 
-<p><strong>Sportart:</strong> <%= @zeitfenster.sportplatz.sportart %></p>
-<p><strong>Zeit:</strong> <%= @zeitfenster.start.strftime("%d.%m.%Y %H:%M") %>–<%= @zeitfenster.ende.strftime("%H:%M") %></p>
-
-<% if @zeitfenster.gesperrt? %>
-  <p>Dieser Platz ist für diesen Zeitraum gesperrt.</p>
-<% elsif @zeitfenster.aktive_reservierung.present? %>
-  <p>Dieses Zeitfenster ist bereits reserviert.</p>
-
-  <% if @bereits_auf_warteliste %>
-    <p>Du stehst bereits auf der Warteliste für dieses Zeitfenster.</p>
-  <% else %>
-    <%= form_with url: wartelisten_path, method: :post do %>
-      <%= hidden_field_tag :zeitfenster_id, @zeitfenster.id %>
-      <%= submit_tag "Auf Warteliste setzen" %>
-    <% end %>
+<div class="mx-auto max-w-xl">
+  <%= link_to zeitfenster_path, class: "link-muted mb-5 inline-flex items-center gap-1" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+    Zurück zur Übersicht
   <% end %>
-<% else %>
-  <%= form_with url: reservierungen_path, method: :post do %>
-    <%= hidden_field_tag :zeitfenster_id, @zeitfenster.id %>
-    <%= submit_tag "Reservieren", data: { turbo_confirm: "Zeitfenster am #{@zeitfenster.start.strftime('%d.%m.%Y %H:%M')} verbindlich reservieren?" } %>
-  <% end %>
-<% end %>
 
-<%= link_to "Zurück zur Übersicht", zeitfenster_path %>
+  <%= render "shared/card", class: "!p-0 overflow-hidden" do %>
+    <div class="flex items-start justify-between gap-4 border-b border-neutral-100 p-6">
+      <div>
+        <h1 class="text-2xl"><%= @zeitfenster.sportplatz.name %></h1>
+        <p class="mt-1 text-sm text-neutral-500"><%= @zeitfenster.sportplatz.sportart %></p>
+      </div>
+      <%= render "zeitfenster/status_badge", zeitfenster: @zeitfenster %>
+    </div>
+
+    <div class="px-6">
+      <%= render "shared/detail_row", label: "Datum" do %><span class="tabular-nums"><%= @zeitfenster.start.strftime("%d.%m.%Y") %></span><% end %>
+      <%= render "shared/detail_row", label: "Zeit" do %><span class="tabular-nums"><%= @zeitfenster.start.strftime("%H:%M") %>–<%= @zeitfenster.ende.strftime("%H:%M") %></span><% end %>
+    </div>
+
+    <div class="border-t border-neutral-100 bg-neutral-50/60 p-6">
+      <% if @zeitfenster.gesperrt? %>
+        <div class="flex items-center gap-3 text-sm text-neutral-600">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 shrink-0 text-neutral-400"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+          Dieser Platz ist für diesen Zeitraum gesperrt.
+        </div>
+      <% elsif @zeitfenster.aktive_reservierung.present? %>
+        <p class="mb-4 text-sm text-neutral-600">Dieses Zeitfenster ist bereits reserviert.</p>
+
+        <% if @bereits_auf_warteliste %>
+          <div class="flex items-center gap-2 text-sm font-medium text-neutral-700">
+            <%= render "shared/badge", label: "Auf Warteliste", variant: :neutral %>
+            Du wirst benachrichtigt, sobald der Platz frei wird.
+          </div>
+        <% else %>
+          <%= form_with url: wartelisten_path, method: :post do %>
+            <%= hidden_field_tag :zeitfenster_id, @zeitfenster.id %>
+            <%= render "shared/button", label: "Auf Warteliste setzen", variant: :secondary, class: "w-full sm:w-auto" %>
+          <% end %>
+          <p class="form-hint">Wird der Platz storniert, rückst du automatisch nach.</p>
+        <% end %>
+      <% else %>
+        <%= form_with url: reservierungen_path, method: :post do %>
+          <%= hidden_field_tag :zeitfenster_id, @zeitfenster.id %>
+          <%= render "shared/button", label: "Jetzt reservieren", variant: :primary, class: "w-full sm:w-auto",
+                confirm: "Zeitfenster am #{@zeitfenster.start.strftime('%d.%m.%Y %H:%M')} verbindlich reservieren?" %>
+        <% end %>
+        <p class="form-hint">Verbindliche Reservierung — du kannst sie jederzeit unter „Meine Reservierungen" stornieren.</p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

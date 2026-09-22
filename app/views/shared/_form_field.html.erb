@@ -1,0 +1,31 @@
+<%#
+  Shared form field wrapper: label above the input, error message directly
+  below it. The input itself is passed in as a block so this works with any
+  form builder field (text_field, select, date_field, …).
+
+  Locals:
+    label:    field label text (required)
+    errors:   array of error strings for this field (default [])
+    required: shows a required marker next to the label
+    hint:     optional helper text shown below the input
+%>
+<div class="mb-4">
+  <label class="form-label">
+    <%= label %><% if local_assigns[:required] %><span class="text-error-600"> *</span><% end %>
+  </label>
+
+  <%= yield %>
+
+  <% if local_assigns[:hint].present? %>
+    <p class="form-hint"><%= hint %></p>
+  <% end %>
+
+  <% Array(local_assigns[:errors]).each do |fehler| %>
+    <p class="form-error">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4 shrink-0">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+      <%= fehler %>
+    </p>
+  <% end %>
+</div>

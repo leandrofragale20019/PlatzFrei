@@ -1,0 +1,13 @@
+<%#
+  Shared card component — a bordered, padded content box.
+
+  Locals:
+    title: optional heading rendered above the yielded content
+    class: optional extra classes
+%>
+<div class="<%= class_names("card", local_assigns[:class]) %>">
+  <% if local_assigns[:title].present? %>
+    <h2 class="text-lg font-semibold text-neutral-900 mb-4"><%= title %></h2>
+  <% end %>
+  <%= yield %>
+</div>

@@ -1,24 +1,38 @@
-<h1>Platz sperren</h1>
+<% content_for :title, "Platz sperren – Verwaltung" %>
 
-<p>Bestehende Reservierungen im gewählten Zeitraum werden automatisch storniert; betroffene Mitglieder sehen das sofort unter "Meine Reservierungen".</p>
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header",
+        eyebrow: "Verwaltung",
+        title: "Platz sperren",
+        description: "Sperre einen Sportplatz für Wartung oder Turniere." %>
 
-<%= form_with url: admin_sperrung_path, method: :post do %>
-  <div>
-    <%= label_tag :sportplatz_id, "Sportplatz" %>
-    <%= select_tag :sportplatz_id, options_from_collection_for_select(@sportplaetze, :id, :name) %>
+  <div class="mb-6 flex items-start gap-3 rounded-xl border border-warning-200 bg-warning-50 px-4 py-3.5 text-sm text-warning-800">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mt-0.5 size-5 shrink-0">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+    </svg>
+    <p>Bestehende Reservierungen im gewählten Zeitraum werden automatisch storniert; betroffene Mitglieder sehen das sofort unter „Meine Reservierungen".</p>
   </div>
 
-  <div>
-    <%= label_tag :von, "Von" %>
-    <%= datetime_field_tag :von %>
-  </div>
+  <%= render "shared/card" do %>
+    <%= form_with url: admin_sperrung_path, method: :post do %>
+      <%= render "shared/form_field", label: "Sportplatz", required: true do %>
+        <%= select_tag :sportplatz_id, options_from_collection_for_select(@sportplaetze, :id, :name), class: "form-input" %>
+      <% end %>
 
-  <div>
-    <%= label_tag :bis, "Bis" %>
-    <%= datetime_field_tag :bis %>
-  </div>
+      <div class="grid gap-x-4 sm:grid-cols-2">
+        <%= render "shared/form_field", label: "Von", required: true do %>
+          <%= datetime_field_tag :von, nil, class: "form-input" %>
+        <% end %>
 
-  <div>
-    <%= submit_tag "Sperren", data: { turbo_confirm: "Platz für diesen Zeitraum wirklich sperren? Bestehende Reservierungen werden storniert." } %>
-  </div>
-<% end %>
+        <%= render "shared/form_field", label: "Bis", required: true do %>
+          <%= datetime_field_tag :bis, nil, class: "form-input" %>
+        <% end %>
+      </div>
+
+      <div class="mt-2">
+        <%= render "shared/button", label: "Platz sperren", variant: :danger, class: "w-full sm:w-auto",
+              confirm: "Platz für diesen Zeitraum wirklich sperren? Bestehende Reservierungen werden storniert." %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

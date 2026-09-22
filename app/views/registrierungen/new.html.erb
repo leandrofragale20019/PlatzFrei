@@ -1,40 +1,44 @@
-<h1>Registrieren</h1>
+<% content_for :title, "Registrieren – PlatzFrei" %>
 
-<% if @benutzer.errors.any? %>
-  <div id="error_explanation">
-    <h2><%= pluralize(@benutzer.errors.count, "Fehler") %> haben die Registrierung verhindert:</h2>
-    <ul>
-      <% @benutzer.errors.each do |error| %>
-        <li><%= error.full_message %></li>
+<div class="mx-auto max-w-md py-4 sm:py-8">
+  <div class="mb-6 text-center">
+    <h1>Konto erstellen</h1>
+    <p class="mt-1.5 text-sm text-neutral-500">In wenigen Sekunden startklar für die erste Reservierung.</p>
+  </div>
+
+  <%= render "shared/card" do %>
+    <% if @benutzer.errors[:base].present? %>
+      <div class="mb-5 rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-800">
+        <% @benutzer.errors[:base].each do |nachricht| %>
+          <p><%= nachricht %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= form_with model: @benutzer, url: registrierung_path, class: "space-y-1" do |form| %>
+      <%= render "shared/form_field", label: "Name", required: true, errors: @benutzer.errors[:name] do %>
+        <%= form.text_field :name, class: form_input_classes(@benutzer.errors[:name]), required: true, autofocus: true, autocomplete: "name" %>
       <% end %>
-    </ul>
-  </div>
-<% end %>
 
-<%= form_with model: @benutzer, url: registrierung_path do |form| %>
-  <div>
-    <%= form.label :name %>
-    <%= form.text_field :name %>
-  </div>
+      <%= render "shared/form_field", label: "E-Mail", required: true, errors: @benutzer.errors[:email] do %>
+        <%= form.email_field :email, class: form_input_classes(@benutzer.errors[:email]), required: true, autocomplete: "email", placeholder: "name@beispiel.ch" %>
+      <% end %>
 
-  <div>
-    <%= form.label :email, "E-Mail" %>
-    <%= form.email_field :email %>
-  </div>
+      <%= render "shared/form_field", label: "Passwort", required: true, errors: @benutzer.errors[:password], hint: "Mindestens 8 Zeichen" do %>
+        <%= form.password_field :password, class: form_input_classes(@benutzer.errors[:password]), required: true, autocomplete: "new-password" %>
+      <% end %>
 
-  <div>
-    <%= form.label :password, "Passwort" %>
-    <%= form.password_field :password %>
-  </div>
+      <%= render "shared/form_field", label: "Passwort bestätigen", required: true, errors: @benutzer.errors[:password_confirmation] do %>
+        <%= form.password_field :password_confirmation, class: form_input_classes(@benutzer.errors[:password_confirmation]), required: true, autocomplete: "new-password" %>
+      <% end %>
 
-  <div>
-    <%= form.label :password_confirmation, "Passwort bestätigen" %>
-    <%= form.password_field :password_confirmation %>
-  </div>
+      <div class="pt-2">
+        <%= render "shared/button", label: "Konto erstellen", variant: :primary, class: "w-full" %>
+      </div>
+    <% end %>
+  <% end %>
 
-  <div>
-    <%= form.submit "Registrieren" %>
-  </div>
-<% end %>
-
-<%= link_to "Bereits ein Konto? Anmelden", new_sitzung_path %>
+  <p class="mt-6 text-center text-sm text-neutral-500">
+    Bereits ein Konto? <%= link_to "Anmelden", new_sitzung_path, class: "font-semibold" %>
+  </p>
+</div>

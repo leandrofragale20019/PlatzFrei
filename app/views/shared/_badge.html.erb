@@ -1,0 +1,17 @@
+<%#
+  Shared status badge.
+
+  Locals:
+    label:   badge text (required)
+    variant: :success | :warning | :neutral | :primary | :error (default :neutral)
+%>
+<%
+  variant_classes = {
+    success: "badge badge-success",
+    warning: "badge badge-warning",
+    neutral: "badge badge-neutral",
+    primary: "badge badge-primary",
+    error: "badge badge-error"
+  }.fetch(local_assigns.fetch(:variant, :neutral))
+%>
+<span class="<%= variant_classes %>"><%= label %></span>

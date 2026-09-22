@@ -1,0 +1,262 @@
+@import "tailwindcss";
+
+/*
+ * PlatzFrei design system. Views compose named tokens (color, type) and the
+ * component classes below instead of ad-hoc hex values or one-off utility
+ * soup. Spacing follows Tailwind's default 4px scale.
+ *
+ * Colour roles:
+ *   primary  – brand + primary actions (blue)
+ *   success  – free slots / confirmations (green)
+ *   warning  – occupied / waiting states (amber)
+ *   error    – conflicts / cancellations / validation (red)
+ *   neutral  – cool-slate text, surfaces, borders (one gray family)
+ *   ink      – the near-black used for the admin console signature
+ */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Primary — a deep, slightly royal blue. */
+  --color-primary-50: #eef4ff;
+  --color-primary-100: #dbe6fe;
+  --color-primary-200: #bfd3fe;
+  --color-primary-300: #93b4fd;
+  --color-primary-400: #6089fa;
+  --color-primary-500: #3b63f6;
+  --color-primary-600: #2445ea;
+  --color-primary-700: #1c34d1;
+  --color-primary-800: #1d2fa9;
+  --color-primary-900: #1d2e85;
+
+  /* Neutral — cool slate, one consistent gray family. */
+  --color-neutral-50: #f7f8fa;
+  --color-neutral-100: #eef1f5;
+  --color-neutral-200: #e1e6ee;
+  --color-neutral-300: #cbd3e0;
+  --color-neutral-400: #94a0b4;
+  --color-neutral-500: #64718a;
+  --color-neutral-600: #475169;
+  --color-neutral-700: #333c52;
+  --color-neutral-800: #1e2637;
+  --color-neutral-900: #111828;
+
+  /* Ink — the near-black console surface for the admin area. */
+  --color-ink-800: #1a2130;
+  --color-ink-900: #131926;
+  --color-ink-950: #0d111b;
+
+  /* Success — free slots, confirmations. */
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-200: #a7f3d0;
+  --color-success-300: #6ee7b7;
+  --color-success-400: #34d399;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+  --color-success-800: #065f46;
+
+  /* Warning — occupied slots, waitlist. */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+
+  /* Error — conflicts, cancellations, validation failures. */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+}
+
+@layer base {
+  body {
+    @apply bg-neutral-50 text-neutral-700 font-sans antialiased;
+    /* Subtle on-brand depth: a soft tint glowing from the top of the page,
+       so the background isn't a dead flat fill. */
+    background-image: radial-gradient(
+      1100px 460px at 50% -12%,
+      color-mix(in oklab, var(--color-primary-500) 9%, transparent),
+      transparent 70%
+    );
+    background-attachment: fixed;
+  }
+
+  h1 {
+    @apply text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900;
+    text-wrap: balance;
+  }
+
+  h2 {
+    @apply text-xl font-bold tracking-tight text-neutral-900;
+    text-wrap: balance;
+  }
+
+  h3 {
+    @apply text-base font-semibold text-neutral-900;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    @apply text-primary-700 underline-offset-2 transition-colors hover:text-primary-800 hover:underline;
+  }
+
+  /* Data-heavy UI: times, dates and counts line up in columns. */
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* ---- Buttons ---------------------------------------------------------- */
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-lg px-4 py-2.5
+      text-sm font-semibold no-underline transition
+      duration-150 ease-out active:scale-[0.98]
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-50
+      disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white shadow-sm shadow-primary-600/25
+      hover:bg-primary-700 hover:no-underline focus-visible:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply border border-neutral-300 bg-white text-neutral-700
+      hover:border-neutral-400 hover:bg-neutral-50 hover:text-neutral-900 hover:no-underline
+      focus-visible:ring-primary-500;
+  }
+
+  .btn-danger {
+    @apply bg-error-600 text-white shadow-sm shadow-error-600/25
+      hover:bg-error-700 hover:no-underline focus-visible:ring-error-500;
+  }
+
+  /* Low-emphasis text action (e.g. "Zurück"). */
+  .link-muted {
+    @apply text-sm font-medium text-neutral-500 no-underline transition-colors hover:text-neutral-900 hover:underline;
+  }
+
+  /* ---- Surfaces --------------------------------------------------------- */
+  .card {
+    @apply rounded-2xl border border-neutral-200/80 bg-white p-6;
+    box-shadow:
+      0 1px 2px -1px color-mix(in oklab, var(--color-neutral-900) 12%, transparent),
+      0 8px 24px -12px color-mix(in oklab, var(--color-neutral-900) 18%, transparent);
+  }
+
+  /* Bordered, rounded wrapper for tables/lists (no inner padding). */
+  .panel {
+    @apply overflow-hidden rounded-2xl border border-neutral-200/80 bg-white;
+    box-shadow:
+      0 1px 2px -1px color-mix(in oklab, var(--color-neutral-900) 10%, transparent),
+      0 8px 24px -14px color-mix(in oklab, var(--color-neutral-900) 16%, transparent);
+  }
+
+  /* ---- Data tables ------------------------------------------------------ */
+  .data-table {
+    @apply min-w-full text-sm;
+  }
+
+  .data-table thead th {
+    @apply whitespace-nowrap bg-neutral-50/80 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500;
+  }
+
+  .data-table tbody tr {
+    @apply border-t border-neutral-100 transition-colors hover:bg-primary-50/40;
+  }
+
+  .data-table tbody td {
+    @apply px-4 py-3.5 align-middle text-neutral-700;
+  }
+
+  .data-table tbody td.cell-strong {
+    @apply font-semibold text-neutral-900;
+  }
+
+  /* ---- Badges ----------------------------------------------------------- */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ring-1 ring-inset;
+  }
+
+  .badge::before {
+    @apply size-1.5 rounded-full bg-current opacity-70;
+    content: "";
+  }
+
+  .badge-success {
+    @apply bg-success-50 text-success-700 ring-success-600/20;
+  }
+
+  .badge-warning {
+    @apply bg-warning-50 text-warning-700 ring-warning-600/20;
+  }
+
+  .badge-neutral {
+    @apply bg-neutral-100 text-neutral-600 ring-neutral-500/20;
+  }
+
+  .badge-primary {
+    @apply bg-primary-50 text-primary-700 ring-primary-600/20;
+  }
+
+  .badge-error {
+    @apply bg-error-50 text-error-700 ring-error-600/20;
+  }
+
+  /* ---- Forms ------------------------------------------------------------ */
+  .form-label {
+    @apply mb-1.5 block text-sm font-semibold text-neutral-700;
+  }
+
+  .form-input {
+    @apply block w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900
+      shadow-sm transition placeholder-neutral-400
+      focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30
+      disabled:bg-neutral-100 disabled:text-neutral-400;
+  }
+
+  .form-input-error {
+    @apply border-error-400 focus:border-error-500 focus:ring-error-500/30;
+  }
+
+  .form-error {
+    @apply mt-1.5 flex items-center gap-1 text-sm font-medium text-error-600;
+  }
+
+  .form-hint {
+    @apply mt-1.5 text-sm text-neutral-500;
+  }
+
+  /* ---- Navigation ------------------------------------------------------- */
+  .nav-link {
+    @apply rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 no-underline transition-colors
+      hover:bg-neutral-100 hover:text-neutral-900 hover:no-underline;
+  }
+
+  .nav-link-active {
+    @apply bg-primary-50 text-primary-700 hover:bg-primary-50 hover:text-primary-700;
+  }
+
+  /* Admin console sub-navigation (on the dark ink bar). */
+  .subnav-link {
+    @apply rounded-md px-3 py-1.5 text-sm font-medium text-neutral-300 no-underline transition-colors
+      hover:bg-white/10 hover:text-white hover:no-underline;
+  }
+
+  .subnav-link-active {
+    @apply bg-white/10 text-white hover:bg-white/10;
+  }
+}
