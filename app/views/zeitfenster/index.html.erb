@@ -60,7 +60,12 @@
         <% @zeitfenster.each do |zeitfenster| %>
           <tr>
             <td class="cell-strong"><%= zeitfenster.sportplatz.name %></td>
-            <td><%= zeitfenster.sportplatz.sportart %></td>
+            <td>
+              <span class="inline-flex items-center gap-2.5">
+                <%= render "zeitfenster/sportart_chip", sportart: zeitfenster.sportplatz.sportart %>
+                <span class="font-medium text-neutral-700"><%= zeitfenster.sportplatz.sportart %></span>
+              </span>
+            </td>
             <td class="tabular-nums"><%= zeitfenster.start.strftime("%H:%M") %>–<%= zeitfenster.ende.strftime("%H:%M") %></td>
             <td><%= render "zeitfenster/status_badge", zeitfenster: zeitfenster %></td>
             <td class="text-right">
@@ -78,9 +83,12 @@
       <li>
         <%= link_to zeitfenster_zeigen_path(zeitfenster), class: "tile tile-interactive block no-underline hover:no-underline" do %>
           <div class="flex items-start justify-between gap-2">
-            <div>
-              <p class="font-semibold text-neutral-900"><%= zeitfenster.sportplatz.name %></p>
-              <p class="text-sm text-neutral-500"><%= zeitfenster.sportplatz.sportart %></p>
+            <div class="flex items-center gap-3">
+              <%= render "zeitfenster/sportart_chip", sportart: zeitfenster.sportplatz.sportart %>
+              <div>
+                <p class="font-semibold text-neutral-900"><%= zeitfenster.sportplatz.name %></p>
+                <p class="text-sm text-neutral-500"><%= zeitfenster.sportplatz.sportart %></p>
+              </div>
             </div>
             <%= render "zeitfenster/status_badge", zeitfenster: zeitfenster %>
           </div>

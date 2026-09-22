@@ -1,8 +1,12 @@
-<%# Locals: zeitfenster %>
+<%#
+  Slot status — strict traffic-light logic, independent of the Sportart colours:
+    Frei = grün, Belegt/Reserviert = rot, Gesperrt = grau.
+  Locals: zeitfenster
+%>
 <% if zeitfenster.gesperrt? %>
   <%= render "shared/badge", label: "Gesperrt", variant: :neutral %>
 <% elsif zeitfenster.aktive_reservierung.present? %>
-  <%= render "shared/badge", label: "Reserviert", variant: :warning %>
+  <%= render "shared/badge", label: "Reserviert", variant: :error %>
 <% else %>
   <%= render "shared/badge", label: "Frei", variant: :success %>
 <% end %>
