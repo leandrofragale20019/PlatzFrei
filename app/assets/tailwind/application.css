@@ -1,20 +1,28 @@
 @import "tailwindcss";
 
 /*
- * PlatzFrei design system. Views compose named tokens (color, type) and the
- * component classes below instead of ad-hoc hex values or one-off utility
- * soup. Spacing follows Tailwind's default 4px scale.
+ * PlatzFrei design system (high-end pass). Views compose named tokens and the
+ * component classes below rather than ad-hoc hex values or utility soup.
+ *
+ * Type pairing (Google Fonts):
+ *   display — Bricolage Grotesque (headings, eyebrows-as-numbers)
+ *   sans    — Plus Jakarta Sans   (body, UI, data)
  *
  * Colour roles:
- *   primary  – brand + primary actions (blue)
- *   success  – free slots / confirmations (green)
- *   warning  – occupied / waiting states (amber)
- *   error    – conflicts / cancellations / validation (red)
- *   neutral  – cool-slate text, surfaces, borders (one gray family)
- *   ink      – the near-black used for the admin console signature
+ *   primary  – brand + primary actions (deep blue; stays clear of every status hue)
+ *   success  – verfügbar / bestätigt        (green)
+ *   warning  – belegt / auf Warteliste       (amber)
+ *   error    – Konflikt / storniert-Aktion   (red)
+ *   neutral  – storniert / gesperrt + text/surfaces/hairlines (cool slate)
+ *   ink      – near-black console surface for the admin area
+ *
+ * Motion: one shared easing (--ease-fluid) for spring-like, non-linear motion.
  */
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: "Bricolage Grotesque", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
 
   /* Primary — a deep, slightly royal blue. */
   --color-primary-50: #eef4ff;
@@ -45,7 +53,7 @@
   --color-ink-900: #131926;
   --color-ink-950: #0d111b;
 
-  /* Success — free slots, confirmations. */
+  /* Success — verfügbar, bestätigt. */
   --color-success-50: #ecfdf5;
   --color-success-100: #d1fae5;
   --color-success-200: #a7f3d0;
@@ -56,7 +64,7 @@
   --color-success-700: #047857;
   --color-success-800: #065f46;
 
-  /* Warning — occupied slots, waitlist. */
+  /* Warning — belegt, Warteliste. */
   --color-warning-50: #fffbeb;
   --color-warning-100: #fef3c7;
   --color-warning-200: #fde68a;
@@ -65,7 +73,7 @@
   --color-warning-700: #b45309;
   --color-warning-800: #92400e;
 
-  /* Error — conflicts, cancellations, validation failures. */
+  /* Error — Konflikt, Stornierung. */
   --color-error-50: #fef2f2;
   --color-error-100: #fee2e2;
   --color-error-200: #fecaca;
@@ -80,183 +88,162 @@
 @layer base {
   body {
     @apply bg-neutral-50 text-neutral-700 font-sans antialiased;
-    /* Subtle on-brand depth: a soft tint glowing from the top of the page,
-       so the background isn't a dead flat fill. */
-    background-image: radial-gradient(
-      1100px 460px at 50% -12%,
-      color-mix(in oklab, var(--color-primary-500) 9%, transparent),
-      transparent 70%
-    );
+    /* Soft-structuralism depth: two faint ambient orbs, fixed, no repaint on scroll. */
+    background-image:
+      radial-gradient(680px 420px at 12% -8%, color-mix(in oklab, var(--color-primary-500) 10%, transparent), transparent 70%),
+      radial-gradient(720px 460px at 92% 4%, color-mix(in oklab, var(--color-success-500) 7%, transparent), transparent 72%);
     background-attachment: fixed;
+    background-repeat: no-repeat;
   }
 
-  h1 {
-    @apply text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900;
-    text-wrap: balance;
-  }
-
-  h2 {
-    @apply text-xl font-bold tracking-tight text-neutral-900;
-    text-wrap: balance;
-  }
-
-  h3 {
-    @apply text-base font-semibold text-neutral-900;
-  }
-
-  p {
-    text-wrap: pretty;
-  }
+  h1 { @apply font-display text-3xl font-extrabold tracking-tight text-neutral-900 sm:text-4xl; text-wrap: balance; }
+  h2 { @apply font-display text-2xl font-bold tracking-tight text-neutral-900; text-wrap: balance; }
+  h3 { @apply font-display text-lg font-semibold text-neutral-900; }
+  p  { text-wrap: pretty; }
 
   a {
-    @apply text-primary-700 underline-offset-2 transition-colors hover:text-primary-800 hover:underline;
+    @apply text-primary-700 underline-offset-2 transition-colors duration-200 ease-fluid hover:text-primary-800 hover:underline;
   }
 
   /* Data-heavy UI: times, dates and counts line up in columns. */
-  table {
-    font-variant-numeric: tabular-nums;
+  table { font-variant-numeric: tabular-nums; }
+
+  /* Respect reduced-motion for every reveal/transition we add. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    .reveal-init { opacity: 1 !important; transform: none !important; filter: none !important; }
   }
 }
 
 @layer components {
-  /* ---- Buttons ---------------------------------------------------------- */
+  /* ---- Eyebrow tag ------------------------------------------------------ */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-700 ring-1 ring-inset ring-primary-600/15;
+  }
+
+  /* ---- Buttons (island pills, magnetic press) --------------------------- */
   .btn {
-    @apply inline-flex select-none items-center justify-center gap-2 rounded-lg px-4 py-2.5
-      text-sm font-semibold no-underline transition
-      duration-150 ease-out active:scale-[0.98]
+    @apply relative inline-flex select-none items-center justify-center gap-2 rounded-full px-5 py-2.5
+      text-sm font-semibold no-underline transition duration-300 ease-fluid
+      active:scale-[0.97]
       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-50
       disabled:pointer-events-none disabled:opacity-50;
   }
 
   .btn-primary {
-    @apply bg-primary-600 text-white shadow-sm shadow-primary-600/25
-      hover:bg-primary-700 hover:no-underline focus-visible:ring-primary-500;
+    @apply bg-primary-600 text-white hover:bg-primary-700 hover:no-underline focus-visible:ring-primary-500;
+    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-primary-900) 30%, transparent),
+                0 10px 24px -12px color-mix(in oklab, var(--color-primary-700) 55%, transparent);
   }
 
   .btn-secondary {
-    @apply border border-neutral-300 bg-white text-neutral-700
-      hover:border-neutral-400 hover:bg-neutral-50 hover:text-neutral-900 hover:no-underline
-      focus-visible:ring-primary-500;
+    @apply bg-white text-neutral-700 ring-1 ring-inset ring-neutral-900/10
+      hover:bg-neutral-50 hover:text-neutral-900 hover:no-underline hover:ring-neutral-900/15 focus-visible:ring-primary-500;
+    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-neutral-900) 8%, transparent);
   }
 
   .btn-danger {
-    @apply bg-error-600 text-white shadow-sm shadow-error-600/25
-      hover:bg-error-700 hover:no-underline focus-visible:ring-error-500;
+    @apply bg-error-600 text-white hover:bg-error-700 hover:no-underline focus-visible:ring-error-500;
+    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-error-800) 30%, transparent),
+                0 10px 24px -12px color-mix(in oklab, var(--color-error-700) 50%, transparent);
   }
+
+  /* "Button-in-button" trailing icon: a nested circle with kinetic tension. */
+  .btn-icon {
+    @apply ml-1 flex size-6 items-center justify-center rounded-full transition-transform duration-300 ease-fluid
+      group-hover:translate-x-0.5 group-hover:-translate-y-px;
+  }
+  .btn-primary .btn-icon, .btn-danger .btn-icon { @apply bg-white/20; }
+  .btn-secondary .btn-icon { @apply bg-neutral-900/5; }
 
   /* Low-emphasis text action (e.g. "Zurück"). */
   .link-muted {
-    @apply text-sm font-medium text-neutral-500 no-underline transition-colors hover:text-neutral-900 hover:underline;
+    @apply inline-flex items-center gap-1 text-sm font-medium text-neutral-500 no-underline transition-colors duration-200 ease-fluid hover:text-neutral-900 hover:underline;
   }
 
-  /* ---- Surfaces --------------------------------------------------------- */
+  /* ---- Surfaces: the "Double-Bezel" (Doppelrand) ------------------------ */
+  /* Outer shell — a machined tray the content sits in. */
   .card {
-    @apply rounded-2xl border border-neutral-200/80 bg-white p-6;
+    @apply rounded-[1.75rem] bg-neutral-100/70 p-1.5 ring-1 ring-inset ring-neutral-900/5;
     box-shadow:
-      0 1px 2px -1px color-mix(in oklab, var(--color-neutral-900) 12%, transparent),
-      0 8px 24px -12px color-mix(in oklab, var(--color-neutral-900) 18%, transparent);
+      0 1px 2px color-mix(in oklab, var(--color-neutral-900) 6%, transparent),
+      0 24px 48px -28px color-mix(in oklab, var(--color-neutral-900) 24%, transparent);
+  }
+  /* Inner core — the glass plate. Concentric radius = 1.75rem − 0.375rem. */
+  .card-core {
+    @apply rounded-[1.375rem] bg-white p-6 ring-1 ring-inset ring-neutral-900/5;
   }
 
-  /* Bordered, rounded wrapper for tables/lists (no inner padding). */
+  /* Bordered enclosure for tables/lists (single refined bezel). */
   .panel {
-    @apply overflow-hidden rounded-2xl border border-neutral-200/80 bg-white;
+    @apply overflow-hidden rounded-[1.5rem] bg-white ring-1 ring-inset ring-neutral-900/[0.07];
     box-shadow:
-      0 1px 2px -1px color-mix(in oklab, var(--color-neutral-900) 10%, transparent),
-      0 8px 24px -14px color-mix(in oklab, var(--color-neutral-900) 16%, transparent);
+      0 1px 2px color-mix(in oklab, var(--color-neutral-900) 5%, transparent),
+      0 24px 48px -30px color-mix(in oklab, var(--color-neutral-900) 20%, transparent);
+  }
+
+  /* Standalone list card (mobile rows, feature tiles). */
+  .tile {
+    @apply rounded-[1.25rem] bg-white p-4 ring-1 ring-inset ring-neutral-900/[0.07] transition duration-300 ease-fluid;
+    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-neutral-900) 5%, transparent);
+  }
+  a.tile:hover, .tile-interactive:hover {
+    @apply ring-primary-500/30 -translate-y-0.5;
+    box-shadow: 0 12px 28px -18px color-mix(in oklab, var(--color-primary-700) 45%, transparent);
   }
 
   /* ---- Data tables ------------------------------------------------------ */
-  .data-table {
-    @apply min-w-full text-sm;
-  }
-
+  .data-table { @apply min-w-full text-sm; }
   .data-table thead th {
-    @apply whitespace-nowrap bg-neutral-50/80 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500;
+    @apply whitespace-nowrap bg-neutral-50/70 px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-500;
   }
+  .data-table tbody tr { @apply border-t border-neutral-100 transition-colors duration-200 ease-fluid hover:bg-primary-50/40; }
+  .data-table tbody td { @apply px-5 py-4 align-middle text-neutral-700; }
+  .data-table tbody td.cell-strong { @apply font-semibold text-neutral-900; }
 
-  .data-table tbody tr {
-    @apply border-t border-neutral-100 transition-colors hover:bg-primary-50/40;
-  }
-
-  .data-table tbody td {
-    @apply px-4 py-3.5 align-middle text-neutral-700;
-  }
-
-  .data-table tbody td.cell-strong {
-    @apply font-semibold text-neutral-900;
-  }
-
-  /* ---- Badges ----------------------------------------------------------- */
+  /* ---- Badges (status system) ------------------------------------------ */
   .badge {
     @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ring-1 ring-inset;
   }
+  .badge::before { @apply size-1.5 rounded-full bg-current opacity-70; content: ""; }
 
-  .badge::before {
-    @apply size-1.5 rounded-full bg-current opacity-70;
-    content: "";
-  }
-
-  .badge-success {
-    @apply bg-success-50 text-success-700 ring-success-600/20;
-  }
-
-  .badge-warning {
-    @apply bg-warning-50 text-warning-700 ring-warning-600/20;
-  }
-
-  .badge-neutral {
-    @apply bg-neutral-100 text-neutral-600 ring-neutral-500/20;
-  }
-
-  .badge-primary {
-    @apply bg-primary-50 text-primary-700 ring-primary-600/20;
-  }
-
-  .badge-error {
-    @apply bg-error-50 text-error-700 ring-error-600/20;
-  }
+  .badge-success { @apply bg-success-50 text-success-700 ring-success-600/20; }   /* verfügbar */
+  .badge-warning { @apply bg-warning-50 text-warning-700 ring-warning-600/20; }   /* belegt / Warteliste */
+  .badge-neutral { @apply bg-neutral-100 text-neutral-600 ring-neutral-500/20; }  /* storniert / gesperrt */
+  .badge-primary { @apply bg-primary-50 text-primary-700 ring-primary-600/20; }
+  .badge-error   { @apply bg-error-50 text-error-700 ring-error-600/20; }         /* Konflikt */
 
   /* ---- Forms ------------------------------------------------------------ */
-  .form-label {
-    @apply mb-1.5 block text-sm font-semibold text-neutral-700;
-  }
+  .form-label { @apply mb-1.5 block text-sm font-semibold text-neutral-700; }
 
   .form-input {
-    @apply block w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900
-      shadow-sm transition placeholder-neutral-400
-      focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30
+    @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-neutral-900
+      ring-1 ring-inset ring-neutral-900/10 transition duration-200 ease-fluid placeholder-neutral-400
+      focus:outline-none focus:ring-2 focus:ring-primary-500
       disabled:bg-neutral-100 disabled:text-neutral-400;
+    box-shadow: inset 0 1px 2px color-mix(in oklab, var(--color-neutral-900) 5%, transparent);
   }
+  .form-input-error { @apply ring-error-400 focus:ring-error-500; }
 
-  .form-input-error {
-    @apply border-error-400 focus:border-error-500 focus:ring-error-500/30;
-  }
-
-  .form-error {
-    @apply mt-1.5 flex items-center gap-1 text-sm font-medium text-error-600;
-  }
-
-  .form-hint {
-    @apply mt-1.5 text-sm text-neutral-500;
-  }
+  .form-error { @apply mt-1.5 flex items-center gap-1 text-sm font-medium text-error-600; }
+  .form-hint  { @apply mt-1.5 text-sm text-neutral-500; }
 
   /* ---- Navigation ------------------------------------------------------- */
   .nav-link {
-    @apply rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 no-underline transition-colors
-      hover:bg-neutral-100 hover:text-neutral-900 hover:no-underline;
+    @apply rounded-full px-3.5 py-2 text-sm font-medium text-neutral-600 no-underline transition-colors duration-200 ease-fluid
+      hover:bg-neutral-900/5 hover:text-neutral-900 hover:no-underline;
   }
-
-  .nav-link-active {
-    @apply bg-primary-50 text-primary-700 hover:bg-primary-50 hover:text-primary-700;
-  }
+  .nav-link-active { @apply bg-primary-600/10 text-primary-700 hover:bg-primary-600/10 hover:text-primary-700; }
 
   /* Admin console sub-navigation (on the dark ink bar). */
   .subnav-link {
-    @apply rounded-md px-3 py-1.5 text-sm font-medium text-neutral-300 no-underline transition-colors
+    @apply rounded-full px-3.5 py-1.5 text-sm font-medium text-neutral-300 no-underline transition-colors duration-200 ease-fluid
       hover:bg-white/10 hover:text-white hover:no-underline;
   }
+  .subnav-link-active { @apply bg-white/12 text-white hover:bg-white/12; }
 
-  .subnav-link-active {
-    @apply bg-white/10 text-white hover:bg-white/10;
-  }
+  /* ---- Scroll reveal (progressive enhancement; class added by JS) ------- */
+  .reveal-init { opacity: 0; transform: translateY(1.25rem); filter: blur(6px); }
+  .reveal-ready { transition: opacity 0.7s var(--ease-fluid), transform 0.7s var(--ease-fluid), filter 0.7s var(--ease-fluid); }
+  .reveal-in { opacity: 1; transform: none; filter: none; }
 }

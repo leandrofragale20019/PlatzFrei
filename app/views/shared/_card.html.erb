@@ -1,13 +1,17 @@
 <%#
-  Shared card component — a bordered, padded content box.
+  Shared card — a "Double-Bezel" (Doppelrand) surface: an outer machined tray
+  (.card) holding an inner glass core (.card-core) with concentric radii.
 
   Locals:
-    title: optional heading rendered above the yielded content
-    class: optional extra classes
+    title:      optional heading rendered above the yielded content
+    class:      optional extra classes on the outer shell
+    core_class: optional extra classes on the inner core (e.g. "!p-0")
 %>
 <div class="<%= class_names("card", local_assigns[:class]) %>">
-  <% if local_assigns[:title].present? %>
-    <h2 class="text-lg font-semibold text-neutral-900 mb-4"><%= title %></h2>
-  <% end %>
-  <%= yield %>
+  <div class="<%= class_names("card-core", local_assigns[:core_class]) %>">
+    <% if local_assigns[:title].present? %>
+      <h2 class="mb-4 text-lg"><%= title %></h2>
+    <% end %>
+    <%= yield %>
+  </div>
 </div>
