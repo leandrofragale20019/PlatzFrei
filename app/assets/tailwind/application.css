@@ -24,6 +24,11 @@
   --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-display: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
 
+  /* New type pairing (rolled out app-wide in step 2):
+     Fraunces = editorial serif for large headlines, General Sans = UI/body. */
+  --font-fraunces: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+  --font-general: "General Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
   --ease-fluid: cubic-bezier(0.25, 0.1, 0.25, 1);
 
   /* Primary — the single accent: a vivid, saturated azure. */
