@@ -9,15 +9,15 @@
   Block: optional call-to-action (e.g. a button).
 %>
 <% cta = capture { yield } if block_given? %>
-<div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-white/60 px-6 py-14 text-center">
-  <div class="mb-4 flex size-12 items-center justify-center rounded-full bg-primary-50 text-primary-600">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-6">
+<div class="flex flex-col items-center justify-center rounded-[1.75rem] bg-neutral-100/60 px-6 py-16 text-center ring-1 ring-inset ring-neutral-900/[0.05]">
+  <div class="mb-5 flex size-14 items-center justify-center rounded-2xl bg-white text-primary-600 shadow-[0_10px_24px_-14px_rgba(36,69,234,0.5)] ring-1 ring-inset ring-neutral-900/5">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" class="size-6">
       <path stroke-linecap="round" stroke-linejoin="round" d="<%= local_assigns.fetch(:icon, "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5") %>" />
     </svg>
   </div>
-  <p class="text-base font-semibold text-neutral-900"><%= title %></p>
+  <p class="font-display text-lg font-semibold text-neutral-900"><%= title %></p>
   <% if local_assigns[:description].present? %>
-    <p class="mt-1 max-w-sm text-sm text-neutral-500"><%= description %></p>
+    <p class="mt-1.5 max-w-sm text-sm text-neutral-500"><%= description %></p>
   <% end %>
   <% if cta.present? %>
     <div class="mt-6"><%= cta %></div>

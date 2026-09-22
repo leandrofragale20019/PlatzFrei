@@ -4,7 +4,7 @@
     label: row label (required)
   Block: the value, rendered on the right (plain text or e.g. a badge)
 %>
-<p class="flex items-center justify-between border-b border-neutral-100 py-3 text-sm last:border-b-0">
+<p class="flex items-center justify-between gap-4 border-b border-neutral-100 py-3.5 text-sm last:border-b-0">
   <span class="font-medium text-neutral-500"><%= label %></span>
-  <span class="text-neutral-900"><%= yield %></span>
+  <span class="text-right font-semibold text-neutral-900"><%= yield %></span>
 </p>
