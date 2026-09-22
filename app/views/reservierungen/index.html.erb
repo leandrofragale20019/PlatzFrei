@@ -4,7 +4,7 @@
       eyebrow: "Mein Konto",
       title: "Meine Reservierungen",
       description: "Deine gebuchten Zeitfenster und Wartelisten-Einträge auf einen Blick." do %>
-  <%= render "shared/button", label: "Platz reservieren", variant: :primary, icon: :arrow, href: zeitfenster_path %>
+  <%= render "shared/button", label: "Platz reservieren", variant: :primary, href: zeitfenster_path %>
 <% end %>
 
 <section class="mb-12">
@@ -17,7 +17,7 @@
     <%= render "shared/empty_state",
           title: "Noch keine Reservierungen",
           description: "Sobald du ein Zeitfenster reservierst, erscheint es hier." do %>
-      <%= render "shared/button", label: "Freie Plätze ansehen", variant: :primary, icon: :arrow, href: zeitfenster_path %>
+      <%= render "shared/button", label: "Freie Plätze ansehen", variant: :primary, href: zeitfenster_path %>
     <% end %>
   <% else %>
     <div class="panel hidden md:block">

@@ -1,10 +1,7 @@
 <% content_for :title, "#{@benutzer.name} – Verwaltung" %>
 
 <div class="mx-auto max-w-2xl">
-  <%= link_to admin_benutzer_path, class: "link-muted mb-5" do %>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
-    Zurück zur Übersicht
-  <% end %>
+  <%= link_to "Zurück zur Übersicht", admin_benutzer_path, class: "link-muted mb-5" %>
 
   <%= render "shared/card" do %>
     <div class="mb-6 flex items-center gap-4 border-b border-neutral-100 pb-6">

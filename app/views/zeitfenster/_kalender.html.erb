@@ -4,8 +4,8 @@
   (the controller only reads `datum`/`sportart`, so nothing here is logic).
 
   Locals:
-    angezeigt: Date — first day of the month being shown
-    datum:     Date — the currently selected day
+    angezeigt: Date: first day of the month being shown
+    datum:     Date: the currently selected day
     sportart:  currently active Sportart filter (or nil)
 %>
 <%
@@ -21,16 +21,12 @@
     <div class="mb-5 flex items-center justify-between">
       <p class="font-display text-lg font-bold text-neutral-900"><%= monatsname(angezeigt) %></p>
       <div class="flex items-center gap-2">
-        <%= link_to zeitfenster_path(datum: datum.iso8601, sportart: sportart, monat: (angezeigt - 1.month).iso8601),
-              class: "flex size-9 items-center justify-center rounded-full bg-white/60 text-neutral-600 ring-1 ring-inset ring-neutral-900/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-px hover:bg-white hover:text-neutral-900 hover:no-underline",
-              aria: { label: "Vorheriger Monat" } do %>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
-        <% end %>
-        <%= link_to zeitfenster_path(datum: datum.iso8601, sportart: sportart, monat: (angezeigt + 1.month).iso8601),
-              class: "flex size-9 items-center justify-center rounded-full bg-white/60 text-neutral-600 ring-1 ring-inset ring-neutral-900/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-px hover:bg-white hover:text-neutral-900 hover:no-underline",
-              aria: { label: "Nächster Monat" } do %>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-        <% end %>
+        <%= link_to "‹", zeitfenster_path(datum: datum.iso8601, sportart: sportart, monat: (angezeigt - 1.month).iso8601),
+              class: "flex size-9 items-center justify-center rounded-full border border-neutral-900/10 bg-white/60 text-lg leading-none text-neutral-600 no-underline backdrop-blur-md transition-colors duration-300 hover:bg-white hover:text-neutral-900 hover:no-underline",
+              aria: { label: "Vorheriger Monat" } %>
+        <%= link_to "›", zeitfenster_path(datum: datum.iso8601, sportart: sportart, monat: (angezeigt + 1.month).iso8601),
+              class: "flex size-9 items-center justify-center rounded-full border border-neutral-900/10 bg-white/60 text-lg leading-none text-neutral-600 no-underline backdrop-blur-md transition-colors duration-300 hover:bg-white hover:text-neutral-900 hover:no-underline",
+              aria: { label: "Nächster Monat" } %>
       </div>
     </div>
 
