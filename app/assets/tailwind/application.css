@@ -1,37 +1,35 @@
 @import "tailwindcss";
 
 /*
- * PlatzFrei design system — "Liquid Glass" pass.
+ * PlatzFrei design system - "Liquid Glass", editorial type pass.
  *
  * Material language: frosted, semi-transparent surfaces (backdrop-blur) with a
- * bright hairline edge, soft layered shadows, and generous radii, floating over
- * an off-white gradient rather than a flat fill. Motion is soft and spring-like.
+ * bright hairline BORDER, floating over a calm off-white. Depth comes from
+ * translucency + blur + hairline layering only - NO drop shadows anywhere.
  *
- * Type: Manrope (single family, Google Fonts) — a free, clean grotesque.
+ * Type pairing:
+ *   display - Fraunces (Google Fonts, variable serif) for large headlines
+ *   sans    - General Sans (Fontshare) for UI, body, buttons, labels
  *
- * Colour roles (deliberately reduced, one accent):
- *   primary  – the single accent (vivid azure): brand + primary actions
- *   success / neutral / error – the traffic-light STATUS logic
+ * Colour roles (reduced, one accent):
+ *   primary  - the single accent (azure): brand + primary actions
+ *   success / neutral / error - the traffic-light STATUS logic
  *                               (Frei = green, Gesperrt = gray, Belegt = red)
- *   neutral  – near-black text (#1d1d1f), surfaces, hairlines
- *   ink      – dark console surface for the admin area
- *   sport-*  – small per-sport accent chips (icon only), set inline in views;
- *              never colour a whole row and never reuse the status hues as a badge
+ *   neutral  - near-black text, surfaces, hairlines
+ *   ink      - dark console surface for the admin area
  *
- * Motion: one shared easing (--ease-fluid) for soft, non-linear transitions.
+ * Motion: one shared easing (--ease-fluid); transitions kept to interactive
+ * elements only (buttons, links, inputs, rows) - not on every element.
  */
 @theme {
-  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-display: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
-
-  /* New type pairing (rolled out app-wide in step 2):
-     Fraunces = editorial serif for large headlines, General Sans = UI/body. */
+  --font-sans: "General Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
   --font-fraunces: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
   --font-general: "General Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   --ease-fluid: cubic-bezier(0.25, 0.1, 0.25, 1);
 
-  /* Primary — the single accent: a vivid, saturated azure. */
+  /* Primary - the single accent: a vivid, saturated azure. */
   --color-primary-50: #eef6ff;
   --color-primary-100: #d9ebff;
   --color-primary-200: #bcdcff;
@@ -43,9 +41,9 @@
   --color-primary-800: #0f52a6;
   --color-primary-900: #133f7d;
 
-  /* Neutral — true near-black text on airy off-white. */
+  /* Neutral - true near-black text on airy off-white. */
   --color-neutral-50: #fbfbfd;
-  --color-neutral-100: #f4f4f7;
+  --color-neutral-100: #f3f3f6;
   --color-neutral-200: #e8e8ed;
   --color-neutral-300: #d2d2d7;
   --color-neutral-400: #a1a1a8;
@@ -55,12 +53,12 @@
   --color-neutral-800: #2a2a2d;
   --color-neutral-900: #1d1d1f;
 
-  /* Ink — dark console surface for the admin area. */
+  /* Ink - dark console surface for the admin area. */
   --color-ink-800: #26262b;
   --color-ink-900: #1a1a1e;
   --color-ink-950: #0f0f12;
 
-  /* Success — Frei / bestätigt. */
+  /* Success - Frei / bestätigt. */
   --color-success-50: #ecfdf3;
   --color-success-100: #d1fadf;
   --color-success-200: #a6f4c5;
@@ -71,7 +69,7 @@
   --color-success-700: #027a48;
   --color-success-800: #05603a;
 
-  /* Warning — reserved amber (waitlist accents where a soft caution reads better). */
+  /* Warning - Warteliste. */
   --color-warning-50: #fffaeb;
   --color-warning-100: #fef0c7;
   --color-warning-200: #fedf89;
@@ -80,7 +78,7 @@
   --color-warning-700: #b54708;
   --color-warning-800: #93370d;
 
-  /* Error — Belegt / Konflikt / Stornierung. */
+  /* Error - Belegt / Konflikt / Stornierung. */
   --color-error-50: #fef3f2;
   --color-error-100: #fee4e2;
   --color-error-200: #fecdca;
@@ -95,21 +93,14 @@
 @layer base {
   html { scroll-behavior: smooth; }
 
+  /* Calm, flat off-white - no gradients, no orbs, no dot grid, not pure white. */
   body {
-    @apply text-neutral-800 font-sans antialiased;
-    /* Airy off-white base with two very soft, liquid accent glows. */
-    background-color: #fbfbfd;
-    background-image:
-      radial-gradient(60rem 40rem at 8% -6%, color-mix(in oklab, var(--color-primary-500) 12%, transparent), transparent 60%),
-      radial-gradient(52rem 36rem at 100% 2%, color-mix(in oklab, var(--color-success-500) 9%, transparent), transparent 60%),
-      radial-gradient(48rem 44rem at 50% 108%, color-mix(in oklab, var(--color-primary-400) 8%, transparent), transparent 60%);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
+    @apply bg-neutral-100 text-neutral-800 font-sans antialiased;
   }
 
-  h1 { @apply font-display text-4xl font-extrabold tracking-tight text-neutral-900 sm:text-5xl; letter-spacing: -0.03em; text-wrap: balance; }
-  h2 { @apply font-display text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl; letter-spacing: -0.02em; text-wrap: balance; }
-  h3 { @apply font-display text-lg font-bold text-neutral-900; letter-spacing: -0.01em; }
+  h1 { @apply font-display text-4xl font-medium tracking-tight text-neutral-900 sm:text-5xl; letter-spacing: -0.02em; text-wrap: balance; }
+  h2 { @apply font-display text-2xl font-medium tracking-tight text-neutral-900 sm:text-3xl; letter-spacing: -0.01em; text-wrap: balance; }
+  h3 { @apply font-display text-lg font-semibold text-neutral-900; }
   p  { text-wrap: pretty; }
 
   a {
@@ -129,105 +120,37 @@
 @layer components {
   /* ---- Eyebrow tag ------------------------------------------------------ */
   .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-primary-700 ring-1 ring-inset ring-white/60 backdrop-blur-md;
-    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-neutral-900) 6%, transparent);
+    @apply inline-flex items-center gap-2 rounded-full border border-neutral-900/10 bg-white/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500 backdrop-blur-md;
   }
 
-  /* ---- Buttons (glass pills, soft spring press) ------------------------- */
+  /* ---- Buttons (glass pills, press feedback, no hover motion) ----------- */
   .btn {
     @apply relative inline-flex select-none items-center justify-center gap-2 rounded-full px-5 py-2.5
-      text-sm font-semibold no-underline transition-all duration-300
-      hover:-translate-y-px active:translate-y-0 active:scale-[0.96]
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-50
+      text-sm font-semibold no-underline transition-colors duration-300
+      active:scale-[0.97]
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-100
       disabled:pointer-events-none disabled:opacity-50;
     transition-timing-function: var(--ease-fluid);
   }
-
-  .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-600 hover:no-underline focus-visible:ring-primary-500;
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 30%, transparent),
-      0 1px 2px color-mix(in oklab, var(--color-primary-900) 30%, transparent),
-      0 12px 26px -12px color-mix(in oklab, var(--color-primary-700) 65%, transparent);
-  }
-  .btn-primary:hover {
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 35%, transparent),
-      0 2px 4px color-mix(in oklab, var(--color-primary-900) 32%, transparent),
-      0 18px 34px -12px color-mix(in oklab, var(--color-primary-700) 70%, transparent);
-  }
-
-  .btn-secondary {
-    @apply bg-white/60 text-neutral-800 ring-1 ring-inset ring-white/70 backdrop-blur-md
-      hover:bg-white/80 hover:text-neutral-900 hover:no-underline focus-visible:ring-primary-500;
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 60%, transparent),
-      0 1px 2px color-mix(in oklab, var(--color-neutral-900) 8%, transparent),
-      0 10px 22px -14px color-mix(in oklab, var(--color-neutral-900) 22%, transparent);
-  }
-
-  .btn-danger {
-    @apply bg-error-600 text-white hover:bg-error-600 hover:no-underline focus-visible:ring-error-500;
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 25%, transparent),
-      0 1px 2px color-mix(in oklab, var(--color-error-800) 30%, transparent),
-      0 12px 26px -12px color-mix(in oklab, var(--color-error-700) 60%, transparent);
-  }
-
-  /* "Button-in-button" trailing icon. */
-  .btn-icon {
-    @apply ml-1 flex size-6 items-center justify-center rounded-full transition-transform duration-300
-      group-hover:translate-x-0.5;
-    transition-timing-function: var(--ease-fluid);
-  }
-  .btn-primary .btn-icon, .btn-danger .btn-icon { @apply bg-white/25; }
-  .btn-secondary .btn-icon { @apply bg-neutral-900/5; }
+  .btn-primary   { @apply bg-primary-600 text-white hover:bg-primary-700 hover:no-underline focus-visible:ring-primary-500; }
+  .btn-secondary { @apply border border-neutral-900/10 bg-white/70 text-neutral-800 backdrop-blur-md hover:bg-white hover:text-neutral-900 hover:no-underline focus-visible:ring-primary-500; }
+  .btn-danger    { @apply bg-error-600 text-white hover:bg-error-700 hover:no-underline focus-visible:ring-error-500; }
 
   .link-muted {
     @apply inline-flex items-center gap-1 text-sm font-medium text-neutral-500 no-underline transition-colors duration-300 hover:text-neutral-900 hover:underline;
     transition-timing-function: var(--ease-fluid);
   }
 
-  /* ---- Frosted-glass surfaces ------------------------------------------ */
-  /* Content card = frosted glass pane; the _card partial adds an inner
-     padding wrapper. */
-  .card {
-    @apply rounded-3xl bg-white/55 ring-1 ring-inset ring-white/60 backdrop-blur-xl;
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 65%, transparent),
-      0 1px 2px color-mix(in oklab, var(--color-neutral-900) 5%, transparent),
-      0 28px 56px -28px color-mix(in oklab, var(--color-neutral-900) 26%, transparent);
-  }
-
-  /* Enclosure for tables/lists. */
-  .panel {
-    @apply overflow-hidden rounded-3xl bg-white/60 ring-1 ring-inset ring-white/60 backdrop-blur-xl;
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 65%, transparent),
-      0 1px 2px color-mix(in oklab, var(--color-neutral-900) 5%, transparent),
-      0 28px 56px -30px color-mix(in oklab, var(--color-neutral-900) 24%, transparent);
-  }
-
-  /* Standalone list card / tile. */
-  .tile {
-    @apply rounded-2xl bg-white/60 p-4 ring-1 ring-inset ring-white/60 backdrop-blur-md transition-all duration-300;
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 60%, transparent),
-      0 1px 2px color-mix(in oklab, var(--color-neutral-900) 5%, transparent),
-      0 12px 24px -18px color-mix(in oklab, var(--color-neutral-900) 20%, transparent);
-    transition-timing-function: var(--ease-fluid);
-  }
-  a.tile:hover, .tile-interactive:hover {
-    @apply -translate-y-0.5 bg-white/80 ring-white/80;
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 70%, transparent),
-      0 18px 34px -18px color-mix(in oklab, var(--color-neutral-900) 30%, transparent);
-  }
+  /* ---- Frosted-glass surfaces (depth via blur + hairline border only) --- */
+  .card  { @apply rounded-3xl border border-white/70 bg-white/55 backdrop-blur-xl; }
+  .panel { @apply overflow-hidden rounded-3xl border border-white/70 bg-white/60 backdrop-blur-xl; }
+  .tile  { @apply rounded-2xl border border-white/70 bg-white/60 p-4 backdrop-blur-md transition-colors duration-300; transition-timing-function: var(--ease-fluid); }
+  a.tile:hover, .tile-interactive:hover { @apply border-primary-300 bg-white/85; }
 
   /* ---- Data tables ------------------------------------------------------ */
   .data-table { @apply min-w-full text-sm; }
   .data-table thead th {
-    @apply whitespace-nowrap bg-white/40 px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-500;
+    @apply whitespace-nowrap bg-white/40 px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-500;
   }
   .data-table tbody tr { @apply border-t border-neutral-900/[0.06] transition-colors duration-300 hover:bg-white/50; }
   .data-table tbody td { @apply px-5 py-4 align-middle text-neutral-700; }
@@ -235,70 +158,68 @@
 
   /* ---- Badges (status system: green / gray / red) ---------------------- */
   .badge {
-    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ring-1 ring-inset backdrop-blur-sm;
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap;
   }
   .badge::before { @apply size-1.5 rounded-full bg-current opacity-70; content: ""; }
+  .badge-success { @apply border-success-600/25 bg-success-50 text-success-700; }   /* Frei */
+  .badge-warning { @apply border-warning-600/30 bg-warning-50 text-warning-700; }   /* Warteliste */
+  .badge-neutral { @apply border-neutral-500/25 bg-neutral-100 text-neutral-600; }  /* Gesperrt */
+  .badge-primary { @apply border-primary-600/25 bg-primary-50 text-primary-700; }
+  .badge-error   { @apply border-error-600/30 bg-error-50 text-error-700; }         /* Belegt / Konflikt */
 
-  .badge-success { @apply bg-success-50/80 text-success-700 ring-success-600/20; }   /* Frei */
-  .badge-warning { @apply bg-warning-50/80 text-warning-700 ring-warning-600/25; }   /* Warteliste */
-  .badge-neutral { @apply bg-neutral-100/80 text-neutral-600 ring-neutral-500/20; }  /* Gesperrt */
-  .badge-primary { @apply bg-primary-50/80 text-primary-700 ring-primary-600/20; }
-  .badge-error   { @apply bg-error-50/80 text-error-700 ring-error-600/25; }         /* Belegt / Konflikt */
+  /* ---- Sportart monogram chip (monochrome, distinguished by letter) ----- */
+  .sport-chip {
+    @apply flex size-9 shrink-0 items-center justify-center rounded-xl border border-neutral-900/10 bg-neutral-900/[0.04]
+      font-display text-sm font-semibold text-neutral-700;
+  }
 
   /* ---- Forms ------------------------------------------------------------ */
   .form-label { @apply mb-1.5 block text-sm font-semibold text-neutral-700; }
-
   .form-input {
-    @apply block w-full rounded-xl border-0 bg-white/70 px-3.5 py-2.5 text-sm text-neutral-900
-      ring-1 ring-inset ring-neutral-900/10 backdrop-blur-md transition-all duration-300 placeholder-neutral-400
-      focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500
+    @apply block w-full rounded-xl border border-neutral-900/10 bg-white/70 px-3.5 py-2.5 text-sm text-neutral-900
+      backdrop-blur-md transition-colors duration-300 placeholder-neutral-400
+      focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/40
       disabled:bg-neutral-100 disabled:text-neutral-400;
     transition-timing-function: var(--ease-fluid);
-    box-shadow: inset 0 1px 2px color-mix(in oklab, var(--color-neutral-900) 5%, transparent);
   }
-  .form-input-error { @apply ring-error-400 focus:ring-error-500; }
-  .form-error { @apply mt-1.5 flex items-center gap-1 text-sm font-medium text-error-600; }
+  .form-input-error { @apply border-error-400 focus:border-error-500 focus:ring-error-500/40; }
+  .form-error { @apply mt-1.5 text-sm font-medium text-error-600; }
   .form-hint  { @apply mt-1.5 text-sm text-neutral-500; }
 
   /* ---- Navigation ------------------------------------------------------- */
   .nav-link {
-    @apply rounded-full px-3.5 py-2 text-sm font-medium text-neutral-600 no-underline transition-all duration-300
+    @apply rounded-full px-3.5 py-2 text-sm font-medium text-neutral-600 no-underline transition-colors duration-300
       hover:bg-neutral-900/5 hover:text-neutral-900 hover:no-underline;
     transition-timing-function: var(--ease-fluid);
   }
   .nav-link-active { @apply bg-primary-600/10 text-primary-700 hover:bg-primary-600/10 hover:text-primary-700; }
 
   .subnav-link {
-    @apply rounded-full px-3.5 py-1.5 text-sm font-medium text-neutral-300 no-underline transition-all duration-300
+    @apply rounded-full px-3.5 py-1.5 text-sm font-medium text-neutral-300 no-underline transition-colors duration-300
       hover:bg-white/10 hover:text-white hover:no-underline;
     transition-timing-function: var(--ease-fluid);
   }
   .subnav-link-active { @apply bg-white/15 text-white hover:bg-white/15; }
 
-  /* ---- Calendar (Liquid Glass date picker) ----------------------------- */
+  /* ---- Calendar (glass date picker) ------------------------------------ */
   .kalender-tag {
-    @apply flex aspect-square items-center justify-center rounded-2xl text-sm font-semibold no-underline transition-all duration-300;
+    @apply flex aspect-square items-center justify-center rounded-2xl text-sm font-semibold no-underline transition-colors duration-300;
     transition-timing-function: var(--ease-fluid);
   }
-  /* verfügbar, nicht ausgewählt: heller Rand, transparenter Grund */
   .kalender-tag-frei {
-    @apply bg-white/50 text-neutral-800 ring-1 ring-inset ring-neutral-900/10 backdrop-blur-sm
-      hover:-translate-y-0.5 hover:bg-white/90 hover:text-primary-700 hover:no-underline hover:ring-primary-300;
+    @apply border border-neutral-900/10 bg-white/50 text-neutral-800 backdrop-blur-sm
+      hover:border-primary-300 hover:bg-white hover:text-primary-700 hover:no-underline;
   }
-  /* ausgewählt: dunkel gefüllt, weisse fette Zahl */
   .kalender-tag-aktiv {
-    @apply bg-neutral-900 font-bold text-white ring-1 ring-inset ring-white/10 hover:bg-neutral-900 hover:text-white hover:no-underline;
-    box-shadow: 0 10px 22px -10px color-mix(in oklab, var(--color-neutral-900) 60%, transparent);
+    @apply bg-neutral-900 font-bold text-white hover:bg-neutral-900 hover:text-white hover:no-underline;
   }
-  /* vergangen / nicht verfügbar: ausgegraut, aber als Pill sichtbar */
   .kalender-tag-inaktiv {
-    @apply cursor-not-allowed bg-neutral-900/[0.02] text-neutral-300 ring-1 ring-inset ring-neutral-900/[0.04];
+    @apply cursor-not-allowed border border-neutral-900/[0.04] bg-neutral-900/[0.02] text-neutral-300;
   }
-  /* Tage ausserhalb des Monats: sehr dezent */
   .kalender-tag-fremd { @apply text-neutral-300/70; }
 
   /* ---- Scroll reveal (progressive enhancement; class added by JS) ------- */
-  .reveal-init { opacity: 0; transform: translateY(1.25rem); filter: blur(6px); }
-  .reveal-ready { transition: opacity 0.7s var(--ease-fluid), transform 0.7s var(--ease-fluid), filter 0.7s var(--ease-fluid); }
-  .reveal-in { opacity: 1; transform: none; filter: none; }
+  .reveal-init { opacity: 0; transform: translateY(1rem); }
+  .reveal-ready { transition: opacity 0.7s var(--ease-fluid), transform 0.7s var(--ease-fluid); }
+  .reveal-in { opacity: 1; transform: none; }
 }
