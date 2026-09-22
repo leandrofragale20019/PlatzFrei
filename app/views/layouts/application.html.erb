@@ -19,7 +19,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
 
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -32,7 +32,7 @@
 
     <header class="sticky top-0 z-40 px-4 pt-4 sm:px-6" data-controller="nav">
       <div class="mx-auto max-w-6xl">
-        <div class="rounded-full bg-white/80 py-2 pl-5 pr-2 shadow-[0_18px_40px_-26px_rgba(17,24,40,0.5)] ring-1 ring-inset ring-neutral-900/[0.06] backdrop-blur-xl">
+        <div class="rounded-full bg-white/60 py-2 pl-5 pr-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_18px_44px_-26px_rgba(29,29,31,0.5)] ring-1 ring-inset ring-white/60 backdrop-blur-xl">
           <div class="flex h-11 items-center justify-between gap-4">
             <%= link_to root_path, class: "flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-neutral-900 no-underline hover:no-underline hover:text-neutral-900", style: "font-family: var(--font-display)" do %>
               <span class="flex size-8 items-center justify-center rounded-full bg-primary-600 text-white shadow-[0_6px_16px_-6px_rgba(36,69,234,0.7)]">
@@ -99,7 +99,7 @@
           </div>
         </div>
 
-        <div id="mobile-menu" data-nav-target="panel" class="mt-3 hidden rounded-3xl bg-white/90 p-3 shadow-[0_24px_48px_-28px_rgba(17,24,40,0.5)] ring-1 ring-inset ring-neutral-900/[0.06] backdrop-blur-xl md:hidden">
+        <div id="mobile-menu" data-nav-target="panel" class="mt-3 hidden rounded-3xl bg-white/70 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_24px_48px_-28px_rgba(29,29,31,0.5)] ring-1 ring-inset ring-white/60 backdrop-blur-xl md:hidden">
           <% if angemeldet? %>
             <nav class="space-y-1" aria-label="Hauptnavigation (mobil)">
               <% mitglied_navigation.each do |link| %>

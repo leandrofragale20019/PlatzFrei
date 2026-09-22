@@ -1,14 +1,15 @@
 <%#
-  Shared card — a "Double-Bezel" (Doppelrand) surface: an outer machined tray
-  (.card) holding an inner glass core (.card-core) with concentric radii.
+  Shared card — a frosted-glass pane (.card) floating over the page gradient,
+  with an inner padding wrapper so content keeps consistent breathing room.
 
   Locals:
     title:      optional heading rendered above the yielded content
-    class:      optional extra classes on the outer shell
-    core_class: optional extra classes on the inner core (e.g. "!p-0")
+    class:      optional extra classes on the glass pane
+    core_class: overrides the inner padding wrapper's classes (e.g. "!p-0
+                overflow-hidden" for edge-to-edge sections)
 %>
 <div class="<%= class_names("card", local_assigns[:class]) %>">
-  <div class="<%= class_names("card-core", local_assigns[:core_class]) %>">
+  <div class="<%= local_assigns[:core_class].presence || "p-6 sm:p-7" %>">
     <% if local_assigns[:title].present? %>
       <h2 class="mb-4 text-lg"><%= title %></h2>
     <% end %>
