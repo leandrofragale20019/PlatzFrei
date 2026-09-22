@@ -1,53 +1,10 @@
 <%#
-  Small colored icon chip identifying a Sportart. Purely decorative styling —
-  the per-sport colour system is intentionally separate from the status colours
-  (green/gray/red badges): sports are a filled rounded-square icon, status is a
-  pill badge. Unknown sports get a deterministic colour + a generic ball icon.
+  Sportart identifier: a monochrome monogram chip (the Sportart's initial in
+  the display serif). Distinguishes sports typographically rather than by
+  colour or a generic outline icon, so it stays clear of the status colour
+  system and reads as one calm accent.
 
   Locals:
     sportart: the Sportart name (string)
 %>
-<%
-  key = sportart.to_s.downcase
-  stil =
-    case key
-    when /fussball|fußball|soccer/ then { chip: "bg-success-100 text-success-700", icon: :fussball }
-    when /badminton|federball/     then { chip: "bg-violet-100 text-violet-600", icon: :badminton }
-    when /tennis/                  then { chip: "bg-orange-100 text-orange-600", icon: :tennis }
-    else
-      palette = [
-        "bg-violet-100 text-violet-600",
-        "bg-orange-100 text-orange-600",
-        "bg-rose-100 text-rose-600",
-        "bg-indigo-100 text-indigo-600",
-        "bg-cyan-100 text-cyan-600"
-      ]
-      { chip: palette[key.sum % palette.size], icon: :ball }
-    end
-%>
-<span class="flex size-9 shrink-0 items-center justify-center rounded-xl <%= stil[:chip] %>" title="<%= sportart %>">
-  <% case stil[:icon] %>
-  <% when :fussball %>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5">
-      <circle cx="12" cy="12" r="9" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.6l3.2 2.3-1.2 3.7H10l-1.2-3.7z" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.2v2.6M4.7 8.8l2.3 1.5M6.9 18.4l1.6-2M17.1 18.4l-1.6-2M19.3 8.8l-2.3 1.5" />
-    </svg>
-  <% when :tennis %>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5">
-      <circle cx="12" cy="12" r="9" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M5 6.2c3.4 2.6 3.4 9 0 11.6M19 6.2c-3.4 2.6-3.4 9 0 11.6" />
-    </svg>
-  <% when :badminton %>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.8l4.2 9.4H7.8z" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M7.8 12.2h8.4l-1.4 4.6a2.6 2.6 0 0 1-5.6 0z" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.8v9.4M10 6l1 6.2M14 6l-1 6.2" />
-    </svg>
-  <% else %>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5">
-      <circle cx="12" cy="12" r="9" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3a9 9 0 0 0 0 18M12 3a9 9 0 0 1 0 18M3.2 9.5h17.6M3.2 14.5h17.6" />
-    </svg>
-  <% end %>
-</span>
+<span class="sport-chip" title="<%= sportart %>" aria-hidden="true"><%= sportart.to_s.first&.upcase %></span>

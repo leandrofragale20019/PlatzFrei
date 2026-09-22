@@ -1,19 +1,14 @@
 <%# Renders every flash message with a consistent success/error/info style. %>
 <% flash.each do |art, nachricht| %>
   <%
-    classes, icon_path = case art.to_s
-    when "notice"
-      [ "bg-success-50 text-success-800 ring-success-600/20", "M4.5 12.75l6 6 9-13.5" ]
-    when "alert"
-      [ "bg-error-50 text-error-800 ring-error-600/20", "M12 9v3.75m0 3.75h.008v.008H12v-.008ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" ]
-    else
-      [ "bg-neutral-100 text-neutral-800 ring-neutral-500/20", "M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" ]
+    classes, marke = case art.to_s
+    when "notice" then [ "border-success-600/25 bg-success-50 text-success-800", "Erfolg" ]
+    when "alert"  then [ "border-error-600/30 bg-error-50 text-error-800", "Fehler" ]
+    else               [ "border-neutral-500/25 bg-neutral-100 text-neutral-800", "Hinweis" ]
     end
   %>
-  <div class="mb-6 flex items-start gap-3 rounded-2xl px-4 py-3.5 text-sm ring-1 ring-inset <%= classes %>" role="alert">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 size-5 shrink-0">
-      <path stroke-linecap="round" stroke-linejoin="round" d="<%= icon_path %>" />
-    </svg>
+  <div class="mb-6 flex items-baseline gap-3 rounded-2xl border px-4 py-3.5 text-sm <%= classes %>" role="alert">
+    <span class="text-[11px] font-semibold uppercase tracking-[0.14em] opacity-70"><%= marke %></span>
     <p class="font-medium"><%= nachricht %></p>
   </div>
 <% end %>

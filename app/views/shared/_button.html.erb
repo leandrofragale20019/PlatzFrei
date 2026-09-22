@@ -1,16 +1,14 @@
 <%#
   Shared button component. Renders as a <button> (form submit), a plain link,
   or a button_to (for non-GET actions like destroy), so every clickable action
-  in the app shares one premium look — an island pill with magnetic press
-  physics and an optional nested "button-in-button" trailing icon.
+  in the app shares one glass pill style.
 
   Locals:
     label:    button text (required)
     variant:  :primary | :secondary | :danger (default :primary)
     href:     path to link/submit to (omit for an in-form submit button)
-    method:   HTTP method for href (default :get → plain link)
+    method:   HTTP method for href (default :get, plain link)
     type:     "submit" | "button" (only used without href, default "submit")
-    icon:     :arrow renders a nested circular arrow flush right (optional)
     confirm:  turbo_confirm text shown before the action fires
     disabled: disables the button
     class:    extra classes appended to the pill
@@ -21,26 +19,16 @@
     secondary: "btn btn-secondary",
     danger: "btn btn-danger"
   }.fetch(local_assigns.fetch(:variant, :primary))
-  classes = class_names("group", variant_classes, local_assigns[:class])
+  classes = class_names(variant_classes, local_assigns[:class])
   method = local_assigns.fetch(:method, :get)
   data = local_assigns[:confirm].present? ? { turbo_confirm: local_assigns[:confirm] } : {}
 %>
-<% inner = capture do %>
-  <span><%= label %></span>
-  <% if local_assigns[:icon] == :arrow %>
-    <span class="btn-icon" aria-hidden="true">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-3.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0-6-6m6 6-6 6" />
-      </svg>
-    </span>
-  <% end %>
-<% end %>
 <% if local_assigns[:href] %>
   <% if method == :get %>
-    <%= link_to inner, href, class: classes, data: data %>
+    <%= link_to label, href, class: classes, data: data %>
   <% else %>
-    <%= button_to inner, href, method: method, class: classes, data: data, form_class: "inline" %>
+    <%= button_to label, href, method: method, class: classes, data: data, form_class: "inline" %>
   <% end %>
 <% else %>
-  <%= button_tag inner, type: local_assigns.fetch(:type, "submit"), class: classes, disabled: local_assigns[:disabled], data: data %>
+  <%= button_tag label, type: local_assigns.fetch(:type, "submit"), class: classes, disabled: local_assigns[:disabled], data: data %>
 <% end %>

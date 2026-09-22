@@ -1,23 +1,18 @@
 <%#
-  Composed empty state: icon + message (+ optional CTA block), so blank lists
-  never look like a rendering bug.
+  Composed empty state: a typographic message (+ optional CTA block), so blank
+  lists never look like a rendering bug. No icon by design.
 
   Locals:
     title:       headline (required)
     description: optional supporting line
-    icon:        optional SVG path data (defaults to a calendar glyph)
+    icon:        accepted for backward compatibility, intentionally ignored
   Block: optional call-to-action (e.g. a button).
 %>
 <% cta = capture { yield } if block_given? %>
-<div class="flex flex-col items-center justify-center rounded-3xl bg-white/40 px-6 py-16 text-center ring-1 ring-inset ring-white/60 backdrop-blur-xl">
-  <div class="mb-5 flex size-14 items-center justify-center rounded-2xl bg-white/80 text-primary-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_12px_26px_-14px_rgba(10,116,240,0.5)] ring-1 ring-inset ring-white/70 backdrop-blur-md">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" class="size-6">
-      <path stroke-linecap="round" stroke-linejoin="round" d="<%= local_assigns.fetch(:icon, "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5") %>" />
-    </svg>
-  </div>
-  <p class="font-display text-lg font-semibold text-neutral-900"><%= title %></p>
+<div class="flex flex-col items-center justify-center rounded-3xl border border-white/70 bg-white/40 px-6 py-16 text-center backdrop-blur-xl">
+  <p class="font-display text-xl font-medium text-neutral-900"><%= title %></p>
   <% if local_assigns[:description].present? %>
-    <p class="mt-1.5 max-w-sm text-sm text-neutral-500"><%= description %></p>
+    <p class="mt-2 max-w-sm text-sm text-neutral-500"><%= description %></p>
   <% end %>
   <% if cta.present? %>
     <div class="mt-6"><%= cta %></div>
