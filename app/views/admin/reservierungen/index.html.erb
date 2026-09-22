@@ -25,7 +25,12 @@
         <% @reservierungen.each do |reservierung| %>
           <tr>
             <td class="cell-strong"><%= reservierung.benutzer.name %></td>
-            <td><%= reservierung.zeitfenster.sportplatz.name %></td>
+            <td>
+              <span class="inline-flex items-center gap-2.5">
+                <%= render "zeitfenster/sportart_chip", sportart: reservierung.zeitfenster.sportplatz.sportart %>
+                <span class="font-medium text-neutral-700"><%= reservierung.zeitfenster.sportplatz.name %></span>
+              </span>
+            </td>
             <td class="tabular-nums"><%= reservierung.zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></td>
             <td class="text-right">
               <%= render "shared/button", label: "Stornieren", variant: :danger,
@@ -41,9 +46,13 @@
   <ul class="space-y-3 md:hidden">
     <% @reservierungen.each do |reservierung| %>
       <li class="tile">
-        <p class="font-semibold text-neutral-900"><%= reservierung.benutzer.name %></p>
-        <p class="mt-1 text-sm text-neutral-600"><%= reservierung.zeitfenster.sportplatz.name %></p>
-        <p class="text-sm text-neutral-500 tabular-nums"><%= reservierung.zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></p>
+        <div class="flex items-center gap-3">
+          <%= render "zeitfenster/sportart_chip", sportart: reservierung.zeitfenster.sportplatz.sportart %>
+          <div>
+            <p class="font-semibold text-neutral-900"><%= reservierung.benutzer.name %></p>
+            <p class="mt-0.5 text-sm text-neutral-600"><%= reservierung.zeitfenster.sportplatz.name %> · <span class="tabular-nums"><%= reservierung.zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></span></p>
+          </div>
+        </div>
         <div class="mt-3">
           <%= render "shared/button", label: "Stornieren", variant: :danger,
                 href: admin_reservierung_path(reservierung), method: :delete,
