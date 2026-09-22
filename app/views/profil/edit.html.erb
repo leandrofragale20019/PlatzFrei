@@ -1,11 +1,11 @@
 <% content_for :title, "Profil bearbeiten – PlatzFrei" %>
 
 <div class="mx-auto max-w-2xl">
-  <%= render "shared/page_header", title: "Profil bearbeiten", description: "Aktualisiere deinen Namen, deine E-Mail oder dein Passwort." %>
+  <%= render "shared/page_header", eyebrow: "Mein Konto", title: "Profil bearbeiten", description: "Aktualisiere deinen Namen, deine E-Mail oder dein Passwort." %>
 
   <%= render "shared/card" do %>
     <% if @benutzer.errors[:base].present? %>
-      <div class="mb-5 rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-800">
+      <div class="mb-5 rounded-2xl bg-error-50 px-4 py-3 text-sm text-error-800 ring-1 ring-inset ring-error-600/20">
         <% @benutzer.errors[:base].each do |nachricht| %>
           <p><%= nachricht %></p>
         <% end %>
@@ -33,7 +33,7 @@
         <% end %>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-4">
         <%= render "shared/button", label: "Speichern", variant: :primary %>
         <%= link_to "Abbrechen", profil_path, class: "link-muted" %>
       </div>

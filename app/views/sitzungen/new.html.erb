@@ -1,13 +1,14 @@
 <% content_for :title, "Anmelden – PlatzFrei" %>
 
-<div class="mx-auto max-w-md py-4 sm:py-8">
-  <div class="mb-6 text-center">
-    <h1>Willkommen zurück</h1>
-    <p class="mt-1.5 text-sm text-neutral-500">Melde dich an, um Sportplätze zu reservieren.</p>
+<div class="mx-auto max-w-md py-6 sm:py-10">
+  <div class="mb-7 text-center">
+    <span class="eyebrow">Willkommen zurück</span>
+    <h1 class="mt-4">Anmelden</h1>
+    <p class="mt-2 text-[15px] text-neutral-500">Melde dich an, um Sportplätze zu reservieren.</p>
   </div>
 
   <%= render "shared/card" do %>
-    <%= form_with url: sitzung_path, class: "space-y-1" do |form| %>
+    <%= form_with url: sitzung_path do |form| %>
       <%= render "shared/form_field", label: "E-Mail", required: true do %>
         <%= form.email_field :email, class: "form-input", required: true, autofocus: true, autocomplete: "email", placeholder: "name@beispiel.ch" %>
       <% end %>
@@ -16,13 +17,13 @@
         <%= form.password_field :password, class: "form-input", required: true, autocomplete: "current-password" %>
       <% end %>
 
-      <div class="pt-2">
-        <%= render "shared/button", label: "Anmelden", variant: :primary, class: "w-full" %>
+      <div class="pt-1">
+        <%= render "shared/button", label: "Anmelden", variant: :primary, icon: :arrow, class: "w-full" %>
       </div>
     <% end %>
   <% end %>
 
-  <p class="mt-6 text-center text-sm text-neutral-500">
+  <p class="mt-7 text-center text-sm text-neutral-500">
     Noch kein Konto? <%= link_to "Jetzt registrieren", new_registrierung_path, class: "font-semibold" %>
   </p>
 </div>

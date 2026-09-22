@@ -1,18 +1,18 @@
 <% content_for :title, "Mein Profil – PlatzFrei" %>
 
 <div class="mx-auto max-w-2xl">
-  <%= render "shared/page_header", title: "Mein Profil", description: "Deine Kontodaten und Rolle im Verein." do %>
+  <%= render "shared/page_header", eyebrow: "Mein Konto", title: "Mein Profil", description: "Deine Kontodaten und Rolle im Verein." do %>
     <%= render "shared/button", label: "Bearbeiten", variant: :secondary, href: edit_profil_path %>
   <% end %>
 
   <%= render "shared/card" do %>
     <div class="mb-6 flex items-center gap-4 border-b border-neutral-100 pb-6">
-      <div class="flex size-14 items-center justify-center rounded-2xl bg-primary-600 text-xl font-bold text-white shadow-sm shadow-primary-600/30">
+      <div class="flex size-16 items-center justify-center rounded-2xl bg-primary-600 text-2xl font-bold text-white shadow-[0_12px_28px_-14px_rgba(36,69,234,0.7)]" style="font-family: var(--font-display)">
         <%= @benutzer.name.first&.upcase %>
       </div>
       <div>
-        <p class="text-lg font-bold text-neutral-900"><%= @benutzer.name %></p>
-        <div class="mt-1">
+        <p class="font-display text-xl font-bold text-neutral-900"><%= @benutzer.name %></p>
+        <div class="mt-1.5">
           <%= render "shared/badge",
                 label: @benutzer.verantwortlicher? ? "Platzverantwortliche/r" : "Vereinsmitglied",
                 variant: @benutzer.verantwortlicher? ? :primary : :neutral %>
