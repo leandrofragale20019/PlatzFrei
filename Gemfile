@@ -5,7 +5,7 @@ gem "rails", "~> 8.1.3", ">= 8.1.3.1"
 # json 3.x switched JSON.parse to keyword-only options, which breaks
 # ActiveSupport::JSON.decode's positional-hash call (used to decrypt session/
 # signed cookies) on this Ruby version. Pin to the last compatible 2.x line.
-gem "json", "~> 2.21"
+gem "json", "~> 3.0"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Tailwind CSS, via the standalone CLI (no Node build step) [https://github.com/rails/tailwindcss-rails]
