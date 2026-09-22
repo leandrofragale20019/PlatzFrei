@@ -43,7 +43,7 @@
 
   <ul class="space-y-3 md:hidden">
     <% @protokolle.each do |protokoll| %>
-      <li class="rounded-2xl border border-neutral-200 bg-white p-4">
+      <li class="tile">
         <div class="flex items-center justify-between gap-2">
           <% aktion_variant = { "erstellt" => :success, "storniert" => :error, "geschlossen" => :neutral }.fetch(protokoll.aktion, :neutral) %>
           <%= render "shared/badge", label: protokoll.aktion, variant: aktion_variant %>
