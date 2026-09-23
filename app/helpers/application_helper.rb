@@ -1,8 +1,33 @@
 module ApplicationHelper
   MONATSNAMEN = %w[Januar Februar März April Mai Juni Juli August September Oktober November Dezember].freeze
 
+  # One soft, distinct hue per Sportart: :chip tints the monogram, :kopf tints
+  # the group header. Each entry stays a single hue (no rainbow inside one),
+  # kept light so it never competes with the green/gray/red status badges.
+  SPORT_FARBEN = {
+    "fussball"  => { chip: "border-emerald-600/20 bg-emerald-50 text-emerald-700", kopf: "bg-emerald-50/70" },
+    "fußball"   => { chip: "border-emerald-600/20 bg-emerald-50 text-emerald-700", kopf: "bg-emerald-50/70" },
+    "badminton" => { chip: "border-sky-600/20 bg-sky-50 text-sky-700", kopf: "bg-sky-50/70" },
+    "federball" => { chip: "border-sky-600/20 bg-sky-50 text-sky-700", kopf: "bg-sky-50/70" },
+    "tennis"    => { chip: "border-amber-600/20 bg-amber-50 text-amber-700", kopf: "bg-amber-50/70" }
+  }.freeze
+
+  SPORT_FALLBACK = [
+    { chip: "border-violet-600/20 bg-violet-50 text-violet-700", kopf: "bg-violet-50/70" },
+    { chip: "border-rose-600/20 bg-rose-50 text-rose-700", kopf: "bg-rose-50/70" },
+    { chip: "border-cyan-600/20 bg-cyan-50 text-cyan-700", kopf: "bg-cyan-50/70" },
+    { chip: "border-teal-600/20 bg-teal-50 text-teal-700", kopf: "bg-teal-50/70" }
+  ].freeze
+
   def form_input_classes(errors)
     class_names("form-input", "form-input-error" => errors.present?)
+  end
+
+  # Colour classes for a Sportart (stable for the known sports, deterministic
+  # fallback for any others).
+  def sportart_palette(sportart)
+    key = sportart.to_s.downcase
+    SPORT_FARBEN[key] || SPORT_FALLBACK[key.sum % SPORT_FALLBACK.size]
   end
 
   # "September 2026" — German month label, independent of the app's I18n locale.
