@@ -7,9 +7,7 @@
  * bright hairline BORDER, floating over a calm off-white. Depth comes from
  * translucency + blur + hairline layering only - NO drop shadows anywhere.
  *
- * Type pairing:
- *   display - Fraunces (Google Fonts, variable serif) for large headlines
- *   sans    - General Sans (Fontshare) for UI, body, buttons, labels
+ * Type: a basic Helvetica-first system sans (no web font) for everything.
  *
  * Colour roles (reduced, one accent):
  *   primary  - the single accent (azure): brand + primary actions
@@ -22,10 +20,12 @@
  * elements only (buttons, links, inputs, rows) - not on every element.
  */
 @theme {
-  --font-sans: "General Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
-  --font-fraunces: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
-  --font-general: "General Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Basic sans-serif (Helvetica-first), no web font needed. All type tokens
+     point to the same family so display and UI stay consistent. */
+  --font-sans: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-display: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-fraunces: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-general: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, system-ui, sans-serif;
 
   --ease-fluid: cubic-bezier(0.25, 0.1, 0.25, 1);
 
@@ -98,8 +98,8 @@
     @apply bg-neutral-100 text-neutral-800 font-sans antialiased;
   }
 
-  h1 { @apply font-display text-4xl font-medium tracking-tight text-neutral-900 sm:text-5xl; letter-spacing: -0.02em; text-wrap: balance; }
-  h2 { @apply font-display text-2xl font-medium tracking-tight text-neutral-900 sm:text-3xl; letter-spacing: -0.01em; text-wrap: balance; }
+  h1 { @apply font-display text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl; text-wrap: balance; }
+  h2 { @apply font-display text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl; text-wrap: balance; }
   h3 { @apply font-display text-lg font-semibold text-neutral-900; }
   p  { text-wrap: pretty; }
 
