@@ -1,3 +1,24 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- PlatzFrei Icon: Feld (Quadrat) und Zeitfenster (Kreis) ueberlagern sich -->
+  <!-- die Schnittmenge (solide gefuellt) steht fuer den freien, gebuchten Moment -->
+  <!-- weisser Hintergrundkreis fuer Sichtbarkeit auf dunklen Flaechen -->
+  <defs>
+    <clipPath id="court-clip">
+      <rect x="13" y="13" width="54" height="54" rx="13"/>
+    </clipPath>
+  </defs>
+
+  <!-- Weisser Hintergrund -->
+  <circle cx="50" cy="50" r="49" fill="#FFFFFF"/>
+
+  <!-- Zeitfenster: Kreis, solide dort wo er das Feld ueberlappt -->
+  <circle cx="66" cy="66" r="29" fill="#1B3A6B" clip-path="url(#court-clip)"/>
+
+  <!-- Feld: Quadrat, nur Kontur -->
+  <rect x="13" y="13" width="54" height="54" rx="13"
+        fill="none" stroke="#1B3A6B" stroke-width="6.5"/>
+
+  <!-- Zeitfenster: Kreis, nur Kontur -->
+  <circle cx="66" cy="66" r="29"
+          fill="none" stroke="#1B3A6B" stroke-width="6.5"/>
 </svg>

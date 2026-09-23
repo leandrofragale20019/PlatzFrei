@@ -6,10 +6,20 @@
 # nicht Teil der 8 Implementierungsschritte) — Demo-Daten für die
 # Platzübersicht kommen daher aus diesen Seeds.
 
+# Alte Demo-Platznamen auf die sprechenden Namen migrieren (idempotent), damit
+# bestehende Dev-Datenbanken keine Dubletten bekommen.
+{ "Feld 1" => "Fussballfeld", "Halle 1" => "Badmintonhalle" }.each do |alt, neu|
+  next if Sportplatz.exists?(name: neu)
+
+  Sportplatz.where(name: alt).update_all(name: neu)
+end
+
 sportplaetze = [
-  { name: "Feld 1", sportart: "Fussball" },
-  { name: "Halle 1", sportart: "Badminton" },
-  { name: "Tennisplatz 1", sportart: "Tennis" }
+  { name: "Fussballfeld", sportart: "Fussball" },
+  { name: "Badmintonhalle", sportart: "Badminton" },
+  { name: "Tennisplatz 1", sportart: "Tennis" },
+  { name: "Basketballplatz", sportart: "Basketball" },
+  { name: "Volleyballfeld", sportart: "Volleyball" }
 ].map { |attrs| Sportplatz.find_or_create_by!(name: attrs[:name]) { |s| s.sportart = attrs[:sportart] } }
 
 (0..6).each do |tag_offset|

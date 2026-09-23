@@ -5,11 +5,13 @@ module ApplicationHelper
   # the group header. Each entry stays a single hue (no rainbow inside one),
   # kept light so it never competes with the green/gray/red status badges.
   SPORT_FARBEN = {
-    "fussball"  => { chip: "border-emerald-600/20 bg-emerald-50 text-emerald-700", kopf: "bg-emerald-50/70" },
-    "fußball"   => { chip: "border-emerald-600/20 bg-emerald-50 text-emerald-700", kopf: "bg-emerald-50/70" },
-    "badminton" => { chip: "border-sky-600/20 bg-sky-50 text-sky-700", kopf: "bg-sky-50/70" },
-    "federball" => { chip: "border-sky-600/20 bg-sky-50 text-sky-700", kopf: "bg-sky-50/70" },
-    "tennis"    => { chip: "border-amber-600/20 bg-amber-50 text-amber-700", kopf: "bg-amber-50/70" }
+    "fussball"   => { chip: "border-emerald-600/20 bg-emerald-50 text-emerald-700", kopf: "bg-emerald-50/70" },
+    "fußball"    => { chip: "border-emerald-600/20 bg-emerald-50 text-emerald-700", kopf: "bg-emerald-50/70" },
+    "badminton"  => { chip: "border-sky-600/20 bg-sky-50 text-sky-700", kopf: "bg-sky-50/70" },
+    "federball"  => { chip: "border-sky-600/20 bg-sky-50 text-sky-700", kopf: "bg-sky-50/70" },
+    "tennis"     => { chip: "border-amber-600/20 bg-amber-50 text-amber-700", kopf: "bg-amber-50/70" },
+    "basketball" => { chip: "border-orange-600/20 bg-orange-50 text-orange-700", kopf: "bg-orange-50/70" },
+    "volleyball" => { chip: "border-violet-600/20 bg-violet-50 text-violet-700", kopf: "bg-violet-50/70" }
   }.freeze
 
   SPORT_FALLBACK = [
