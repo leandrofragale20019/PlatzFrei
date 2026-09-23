@@ -1,10 +1,25 @@
 <%#
-  Sportart identifier: a monochrome monogram chip (the Sportart's initial in
-  the display serif). Distinguishes sports typographically rather than by
-  colour or a generic outline icon, so it stays clear of the status colour
-  system and reads as one calm accent.
+  Sportart identifier: a monogram chip (the Sportart's initial in the display
+  serif) with a subtle single-tone shade. All sports share the one accent hue
+  (azure); they differ only by tint step + letter, so it never becomes multi-
+  colour and stays clear of the status colour system.
 
   Locals:
     sportart: the Sportart name (string)
 %>
-<span class="sport-chip" title="<%= sportart %>" aria-hidden="true"><%= sportart.to_s.first&.upcase %></span>
+<%
+  key = sportart.to_s.downcase
+  stufen = [
+    "border-primary-600/15 bg-primary-50 text-primary-600",
+    "border-primary-600/20 bg-primary-100 text-primary-700",
+    "border-primary-700/25 bg-primary-600/10 text-primary-800"
+  ]
+  stufe =
+    case key
+    when /fussball|fußball|soccer/ then 0
+    when /badminton|federball/     then 1
+    when /tennis/                  then 2
+    else key.sum % stufen.size
+    end
+%>
+<span class="sport-chip <%= stufen[stufe] %>" title="<%= sportart %>"><span class="sr-only"><%= sportart %></span><span aria-hidden="true"><%= sportart.to_s.first&.upcase %></span></span>

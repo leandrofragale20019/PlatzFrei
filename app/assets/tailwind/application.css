@@ -167,10 +167,11 @@
   .badge-primary { @apply border-primary-600/25 bg-primary-50 text-primary-700; }
   .badge-error   { @apply border-error-600/30 bg-error-50 text-error-700; }         /* Belegt / Konflikt */
 
-  /* ---- Sportart monogram chip (monochrome, distinguished by letter) ----- */
+  /* ---- Sportart monogram chip ------------------------------------------
+     Distinguished by its letter plus a subtle single-tone (azure) shade;
+     the tint step is applied per sport in the partial. No second hue. */
   .sport-chip {
-    @apply flex size-9 shrink-0 items-center justify-center rounded-xl border border-neutral-900/10 bg-neutral-900/[0.04]
-      font-display text-sm font-semibold text-neutral-700;
+    @apply flex size-9 shrink-0 items-center justify-center rounded-xl border font-display text-sm font-semibold;
   }
 
   /* ---- Forms ------------------------------------------------------------ */
