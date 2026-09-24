@@ -81,6 +81,42 @@ class ReservierungenControllerTest < ActionDispatch::IntegrationTest
     assert_includes max_session.response.body, "Jetzt frei!"
   end
 
+  test "Stornieren auf veralteter Seite nach einer Platzsperrung: Hinweis statt zweiter Stornierung (QA5, Anleitung 4.9)" do
+    reservierung = reservierungen(:anna_bucht_morgen_frueh)
+    veraltete_lock_version = reservierung.lock_version
+    zf = reservierung.zeitfenster
+    zf.sportplatz.sperren!(von: zf.start, bis: zf.ende, akteur: benutzer(:max))
+
+    anmelden_als(benutzer(:anna))
+    assert_no_difference("Protokoll.count") do
+      delete reservierung_path(reservierung), params: { lock_version: veraltete_lock_version }
+    end
+
+    assert_redirected_to reservierungen_path
+    assert_equal "Diese Reservierung wurde inzwischen durch eine Platzsperrung storniert.", flash[:alert]
+  end
+
+  test "index zeigt eine Mitteilung für durch Sperrung stornierte Reservierungen" do
+    zf = zeitfenster(:morgen_frueh)
+    zf.sportplatz.sperren!(von: zf.start, bis: zf.ende, akteur: benutzer(:max))
+
+    anmelden_als(benutzer(:anna))
+    get reservierungen_path
+
+    assert_select "p", text: "Wegen einer Platzsperrung storniert"
+  end
+
+  test "Warteliste zeigt 'Gesperrt' für gesperrte Zeitfenster" do
+    zf = zeitfenster(:morgen_frueh)
+    zf.sportplatz.sperren!(von: zf.start, bis: zf.ende, akteur: benutzer(:max))
+
+    anmelden_als(benutzer(:max))
+    get reservierungen_path
+
+    assert_select ".badge", text: "Gesperrt"
+    assert_not_includes response.body, "Wartend"
+  end
+
   private
 
   def anmelden_als(benutzer)

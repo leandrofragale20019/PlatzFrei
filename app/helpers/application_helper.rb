@@ -68,7 +68,7 @@ module ApplicationHelper
       { label: "Benutzer", path: admin_benutzer_path },
       { label: "Reservierungen", path: admin_reservierungen_path },
       { label: "Protokoll", path: admin_protokolle_path },
-      { label: "Platz sperren", path: new_admin_sperrung_path }
+      { label: "Sperrungen", path: new_admin_sperrung_path }
     ]
   end
 

@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
     resources :reservierungen, only: %i[index destroy]
     resources :protokolle, only: :index
-    resource :sperrung, only: %i[new create]
+    resource :sperrung, only: %i[new create destroy]
   end
 
   # "zeitfenster" ist ebenfalls uncountable (siehe oben), gleiche Lösung.

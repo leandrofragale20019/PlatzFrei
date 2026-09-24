@@ -139,10 +139,12 @@ Reihenfolge zum Durchklicken. Abhaken, was funktioniert.
 5. **Platz sperren**: Sportplatz + Zeitraum wählen → sperren. Bestehende Reservierungen in diesem Zeitraum werden **automatisch storniert** und im Protokoll als „geschlossen" festgehalten.
 
 ### 4.9 Konsistenz Stornierung ↔ Sperrung (QA5, manuell)
-1. Ein Mitglied hat einen Slot reserviert; „Meine Reservierungen" offen lassen.
-2. Als Admin denselben Platz/Zeitraum **sperren** → Reservierung wird storniert.
-3. Das Mitglied klickt jetzt (auf der veralteten Seite) **Stornieren** → freundliche Meldung „Diese Reservierung wurde inzwischen bereits storniert (z. B. durch eine Platzsperrung)." – **kein** Absturz, keine doppelte Stornierung.
-   → Der automatisierte Nachweis dafür ist der `StaleObjectError`-Test in `sportplatz_test.rb`.
+1. Ein Mitglied hat einen Slot reserviert (optional: ein zweites Mitglied steht auf dessen Warteliste); „Meine Reservierungen" offen lassen.
+2. Als Admin unter **Verwaltung → Sperrungen** denselben Platz/Zeitraum **sperren** → Reservierung wird storniert.
+3. Das Mitglied klickt jetzt (auf der veralteten Seite) **Stornieren** → Hinweis „Diese Reservierung wurde inzwischen durch eine Platzsperrung storniert." – **kein** Absturz, keine doppelte Stornierung (kein zweiter Protokolleintrag). Die Seite sendet dafür die `lock_version` mit (Optimistic Locking über Requests hinweg).
+4. „Meine Reservierungen" zeigt oben die Mitteilung **„Wegen einer Platzsperrung storniert"** mit Platz und Zeit; Wartelisten-Einträge für gesperrte Slots haben den Status **„Gesperrt"**.
+5. Als Admin unter **Sperrungen → Aktive Sperrungen** die Sperrung **aufheben** → Slots sind wieder frei, Wartende sehen „Jetzt frei!". Stornierte Reservierungen werden bewusst nicht wiederhergestellt.
+   → Automatisierte Nachweise: `StaleObjectError`-Tests in `sportplatz_test.rb` / `reservierung_test.rb` und `reservierungen_controller_test.rb`.
 
 ---
 

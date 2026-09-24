@@ -18,10 +18,24 @@ class Reservierung < ApplicationRecord
   # statt die Reservierung ein zweites Mal (mit evtl. veralteten Daten) zu
   # überschreiben. Wer zuerst schreibt, gewinnt; der spätere Zugriff wird
   # abgewiesen und an der aufrufenden Stelle behandelt.
+  #
+  # Ist die Reservierung bereits storniert (z.B. Mitglied klickt auf einer
+  # veralteten Seite, nachdem eine Sperrung sie schon geschlossen hat), wird
+  # ebenfalls StaleObjectError geworfen: update! würde mangels Änderung gar
+  # kein UPDATE absetzen und damit den lock_version-Vergleich umgehen – ohne
+  # diese Prüfung entstünde eine zweite "storniert"-Protokollzeile.
   def stornieren!(akteur:, aktion: :storniert)
+    raise ActiveRecord::StaleObjectError.new(self, "stornieren") if storniert?
+
     transaction do
       update!(status: :storniert)
       protokolle.create!(akteur: akteur, aktion: aktion, zeitpunkt: Time.current)
     end
+  end
+
+  # Wurde die Reservierung durch eine Platzsperrung (nicht vom Mitglied selbst)
+  # storniert?
+  def durch_sperrung_storniert?
+    storniert? && protokolle.geschlossen.exists?
   end
 end

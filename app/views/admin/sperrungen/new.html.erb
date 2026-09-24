@@ -1,4 +1,4 @@
-<% content_for :title, "Platz sperren – Verwaltung" %>
+<% content_for :title, "Sperrungen – Verwaltung" %>
 
 <div class="mx-auto max-w-2xl">
   <%= render "shared/page_header",
@@ -32,4 +32,38 @@
       </div>
     <% end %>
   <% end %>
+
+  <section class="mt-12">
+    <div class="mb-4 flex items-baseline gap-3">
+      <h2>Aktive Sperrungen</h2>
+      <span class="text-sm text-neutral-400 tabular-nums"><%= @sperrungen.size %></span>
+    </div>
+
+    <% if @sperrungen.empty? %>
+      <%= render "shared/empty_state",
+            title: "Keine aktiven Sperrungen",
+            description: "Gesperrte Zeitfenster erscheinen hier und können wieder freigegeben werden." %>
+    <% else %>
+      <ul class="space-y-3">
+        <% @sperrungen.each do |(sportplatz, datum), slots| %>
+          <li class="tile flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <%= render "zeitfenster/sportart_chip", sportart: sportplatz.sportart %>
+              <div>
+                <p class="font-semibold text-neutral-900"><%= sportplatz.name %></p>
+                <p class="mt-0.5 text-sm text-neutral-600 tabular-nums">
+                  <%= datum.strftime("%d.%m.%Y") %>, <%= slots.first.start.strftime("%H:%M") %>–<%= slots.last.ende.strftime("%H:%M") %>
+                  (<%= slots.size %> Zeitfenster)
+                </p>
+              </div>
+            </div>
+            <%= render "shared/button", label: "Sperrung aufheben", variant: :secondary,
+                  href: admin_sperrung_path, method: :delete,
+                  params: { sportplatz_id: sportplatz.id, von: slots.first.start.iso8601, bis: slots.last.start.iso8601 },
+                  confirm: "Sperrung für #{sportplatz.name} am #{datum.strftime('%d.%m.%Y')} aufheben? Stornierte Reservierungen werden nicht wiederhergestellt." %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
 </div>

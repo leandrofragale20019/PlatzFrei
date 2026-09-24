@@ -1,5 +1,7 @@
 <%# Locals: eintrag %>
-<% if !eintrag.zeitfenster.gesperrt? && eintrag.zeitfenster.aktive_reservierung.blank? %>
+<% if eintrag.zeitfenster.gesperrt? %>
+  <%= render "shared/badge", label: "Gesperrt", variant: :neutral %>
+<% elsif eintrag.zeitfenster.aktive_reservierung.blank? %>
   <div class="flex flex-wrap items-center gap-2">
     <%= render "shared/badge", label: "Jetzt frei!", variant: :success %>
     <%= link_to "Jetzt reservieren", zeitfenster_zeigen_path(eintrag.zeitfenster), class: "text-sm font-semibold no-underline hover:underline" %>

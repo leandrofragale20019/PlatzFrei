@@ -42,6 +42,35 @@ class Admin::SperrungenControllerTest < ActionDispatch::IntegrationTest
     assert_not zeitfenster(:morgen_frueh).reload.gesperrt?
   end
 
+  test "destroy hebt die Sperrung im Zeitraum wieder auf" do
+    anmelden_als(benutzer(:max))
+    zf = zeitfenster(:morgen_gesperrt)
+
+    delete admin_sperrung_path, params: { sportplatz_id: zf.sportplatz_id, von: zf.start.iso8601, bis: zf.start.iso8601 }
+
+    assert_redirected_to new_admin_sperrung_path
+    assert_not zf.reload.gesperrt?
+  end
+
+  test "destroy als mitglied ist verboten" do
+    anmelden_als(benutzer(:anna))
+    zf = zeitfenster(:morgen_gesperrt)
+
+    delete admin_sperrung_path, params: { sportplatz_id: zf.sportplatz_id, von: zf.start.iso8601, bis: zf.start.iso8601 }
+
+    assert_redirected_to root_path
+    assert zf.reload.gesperrt?
+  end
+
+  test "new listet aktive Sperrungen" do
+    anmelden_als(benutzer(:max))
+
+    get new_admin_sperrung_path
+
+    assert_response :success
+    assert_select "button", text: "Sperrung aufheben"
+  end
+
   private
 
   def anmelden_als(benutzer)

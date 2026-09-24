@@ -10,6 +10,7 @@
     method:   HTTP method for href (default :get, plain link)
     type:     "submit" | "button" (only used without href, default "submit")
     confirm:  turbo_confirm text shown before the action fires
+    params:   extra hidden fields for a button_to form (non-GET only)
     disabled: disables the button
     class:    extra classes appended to the pill
 %>
@@ -27,7 +28,7 @@
   <% if method == :get %>
     <%= link_to label, href, class: classes, data: data %>
   <% else %>
-    <%= button_to label, href, method: method, class: classes, data: data, form_class: "inline" %>
+    <%= button_to label, href, method: method, params: local_assigns.fetch(:params, {}), class: classes, data: data, form_class: "inline" %>
   <% end %>
 <% else %>
   <%= button_tag label, type: local_assigns.fetch(:type, "submit"), class: classes, disabled: local_assigns[:disabled], data: data %>

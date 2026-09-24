@@ -7,5 +7,7 @@ class Admin::ReservierungenController < Admin::BaseController
     reservierung = Reservierung.find(params[:id])
     reservierung.stornieren!(akteur: current_benutzer)
     redirect_to admin_reservierungen_path, notice: "Reservierung storniert."
+  rescue ActiveRecord::StaleObjectError
+    redirect_to admin_reservierungen_path, alert: "Diese Reservierung wurde inzwischen bereits storniert."
   end
 end

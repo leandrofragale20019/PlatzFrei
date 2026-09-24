@@ -56,4 +56,13 @@ class ReservierungTest < ActiveSupport::TestCase
     assert_equal benutzer(:max), protokoll.akteur
     assert_not_equal protokoll.akteur, reservierung.benutzer
   end
+
+  test "stornieren! auf bereits stornierter Reservierung wirft StaleObjectError und protokolliert nichts" do
+    reservierung = reservierungen(:anna_bucht_morgen_frueh)
+    reservierung.stornieren!(akteur: benutzer(:anna))
+
+    assert_no_difference("Protokoll.count") do
+      assert_raises(ActiveRecord::StaleObjectError) { reservierung.stornieren!(akteur: benutzer(:anna)) }
+    end
+  end
 end

@@ -7,6 +7,19 @@
   <%= render "shared/button", label: "Platz reservieren", variant: :primary, href: zeitfenster_path %>
 <% end %>
 
+<% if @durch_sperrung_storniert.any? %>
+  <div class="mb-8 rounded-2xl border border-warning-600/25 bg-warning-50 px-4 py-3.5 text-sm text-warning-800" role="status">
+    <p class="font-semibold">Wegen einer Platzsperrung storniert</p>
+    <ul class="mt-1.5 space-y-0.5">
+      <% @durch_sperrung_storniert.each do |reservierung| %>
+        <li class="tabular-nums">
+          <%= reservierung.zeitfenster.sportplatz.name %>, <%= reservierung.zeitfenster.start.strftime("%d.%m.%Y %H:%M") %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <section class="mb-12">
   <div class="mb-4 flex items-baseline gap-3">
     <h2>Gebucht</h2>
@@ -39,6 +52,7 @@
               <td class="text-right">
                 <%= render "shared/button", label: "Stornieren", variant: :danger,
                       href: reservierung_path(reservierung), method: :delete,
+                      params: { lock_version: reservierung.lock_version },
                       confirm: "Reservierung wirklich stornieren?" %>
               </td>
             </tr>
@@ -60,6 +74,7 @@
           <div class="mt-3">
             <%= render "shared/button", label: "Stornieren", variant: :danger,
                   href: reservierung_path(reservierung), method: :delete,
+                  params: { lock_version: reservierung.lock_version },
                   confirm: "Reservierung wirklich stornieren?", class: "w-full" %>
           </div>
         </li>

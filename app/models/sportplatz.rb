@@ -49,4 +49,14 @@ class Sportplatz < ApplicationRecord
       end
     end
   end
+
+  # Hebt die Sperrung aller Zeitfenster dieses Platzes im Zeitraum wieder auf.
+  # Durch die Sperrung stornierte Reservierungen bleiben storniert (die
+  # Mitglieder wurden bereits informiert); die Slots werden einfach wieder
+  # frei, und Wartende sehen sie als "Jetzt frei!".
+  def entsperren!(von:, bis:)
+    transaction do
+      zeitfenster.where(gesperrt: true, start: von..bis).find_each { |zf| zf.update!(gesperrt: false) }
+    end
+  end
 end
