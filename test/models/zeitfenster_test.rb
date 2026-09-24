@@ -43,15 +43,14 @@ class ZeitfensterTest < ActiveSupport::TestCase
     assert gleiche_zeit_anderer_platz.valid?
   end
 
-  test "reserviert_von! legt eine Reservierung an und erhöht lock_version" do
+  test "reserviert_von! legt eine Reservierung für das Zeitfenster an" do
     zf = zeitfenster(:morgen_spaet)
-    alter_lock_version = zf.lock_version
 
     reservierung = zf.reserviert_von!(benutzer(:anna))
 
     assert reservierung.persisted?
     assert_equal benutzer(:anna), reservierung.benutzer
-    assert_equal alter_lock_version + 1, zf.reload.lock_version
+    assert_equal zf, reservierung.zeitfenster
   end
 
   test "reserviert_von! protokolliert die Reservierung atomar" do
@@ -64,13 +63,13 @@ class ZeitfensterTest < ActiveSupport::TestCase
     assert_equal benutzer(:anna), protokoll.akteur
   end
 
-  test "bei einem Konflikt wird kein Protokoll-Eintrag geschrieben" do
+  test "bei einem Reservierungs-Konflikt wird kein Protokoll-Eintrag geschrieben" do
     zf_fuer_anna = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
     zf_fuer_max = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
 
     zf_fuer_anna.reserviert_von!(benutzer(:anna))
 
-    assert_raises(ActiveRecord::StaleObjectError, ActiveRecord::RecordNotUnique) do
+    assert_raises(ActiveRecord::RecordNotUnique) do
       zf_fuer_max.reserviert_von!(benutzer(:max))
     end
 
@@ -78,18 +77,18 @@ class ZeitfensterTest < ActiveSupport::TestCase
     assert_not Protokoll.exists?(akteur: benutzer(:max))
   end
 
-  test "konkurrierende Reservierung desselben Zeitfensters: nur die erste gelingt" do
-    # Simuliert zwei Mitglieder, die dieselbe Detailseite gleichzeitig offen
-    # haben: beide laden das Zeitfenster mit demselben lock_version-Stand,
-    # bevor irgendjemand reserviert. Je nach Timing schlägt entweder der
-    # partielle Unique-Index (Schritt 1) oder lock_version zu — beide sind
-    # gültige Ausprägungen derselben Sicherheitsgarantie.
+  test "konkurrierende Reservierung desselben Zeitfensters: nur die erste gelingt (Unique-Index)" do
+    # Zwei Mitglieder haben dieselbe Detailseite offen und reservieren fast
+    # gleichzeitig. Gegen die Doppelbuchung schützt allein der partielle
+    # Unique-Index auf reservierungen: der erste INSERT gelingt, der zweite
+    # scheitert mit RecordNotUnique. lock_version spielt hier keine Rolle (es
+    # schützt nur UPDATEs, nicht das INSERT einer neuen Reservierung).
     zf_fuer_anna = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
     zf_fuer_max = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
 
     zf_fuer_anna.reserviert_von!(benutzer(:anna))
 
-    assert_raises(ActiveRecord::StaleObjectError, ActiveRecord::RecordNotUnique) do
+    assert_raises(ActiveRecord::RecordNotUnique) do
       zf_fuer_max.reserviert_von!(benutzer(:max))
     end
 
@@ -97,23 +96,6 @@ class ZeitfensterTest < ActiveSupport::TestCase
     # aktiven Reservierungs-Eintrag.
     assert_equal 1, zeitfenster(:morgen_spaet).reload.reservierungen.reserviert.count
     assert_equal benutzer(:anna), zeitfenster(:morgen_spaet).aktive_reservierung.benutzer
-  end
-
-  test "lock_version erkennt eine veraltete Zeitfenster-Referenz auch wenn der Unique-Index (noch) nicht greift" do
-    # Zeigt, dass die Sicherheit nicht nur vom Unique-Index kommt: Anna
-    # reserviert und storniert sofort wieder (Slot ist laut Index wieder
-    # frei), aber Max hält noch eine veraltete lock_version-Referenz von vor
-    # Annas Reservierung — sein Versuch muss trotzdem als Konflikt erkannt
-    # werden, weil er auf Basis veralteter Daten handelt.
-    zf_fuer_anna = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
-    zf_fuer_max = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
-
-    reservierung = zf_fuer_anna.reserviert_von!(benutzer(:anna))
-    reservierung.update!(status: :storniert)
-
-    assert_raises(ActiveRecord::StaleObjectError) do
-      zf_fuer_max.reserviert_von!(benutzer(:max))
-    end
   end
 
   test "frei-Scope schliesst gesperrte und bereits reservierte Zeitfenster aus" do

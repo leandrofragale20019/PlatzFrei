@@ -14,16 +14,22 @@ class Zeitfenster < ApplicationRecord
     reservierungen.detect(&:reserviert?)
   end
 
-  # Legt die Reservierung an und "berührt" danach das Zeitfenster selbst in
-  # derselben Transaktion, damit Rails' Optimistic Locking (lock_version)
-  # greift: hat sich das Zeitfenster seit dem Laden bereits geändert (weil
-  # jemand anderes zwischenzeitlich reserviert hat), wirft touch
-  # ActiveRecord::StaleObjectError. Ein reines INSERT in reservierungen
-  # allein würde lock_version auf zeitfenster nicht prüfen.
+  # Legt eine neue Reservierung für dieses Zeitfenster an (atomar mit dem
+  # zugehörigen Protokoll-Eintrag).
+  #
+  # Schutz gegen Doppelbuchung: ausschliesslich der partielle Unique-Index auf
+  # reservierungen (zeitfenster_id, WHERE status = 'reserviert'). Reservieren
+  # zwei Mitglieder denselben Slot nahezu gleichzeitig, gelingt genau ein
+  # INSERT; der zweite scheitert mit ActiveRecord::RecordNotUnique.
+  #
+  # lock_version (Optimistic Locking) greift hier bewusst NICHT: es schützt nur
+  # UPDATEs an einer bereits bestehenden Zeile, nicht das INSERT einer neuen
+  # Reservierung. Der eigentliche Optimistic-Locking-Fall der App liegt auf der
+  # bestehenden Reservierung (Stornierung vs. Sperrung), siehe
+  # Reservierung#stornieren! und Sportplatz#sperren!.
   def reserviert_von!(benutzer)
     transaction do
       reservierung = reservierungen.create!(benutzer: benutzer, erstellt_am: Time.current)
-      touch
       reservierung.protokolle.create!(akteur: benutzer, aktion: :erstellt, zeitpunkt: Time.current)
       reservierung
     end

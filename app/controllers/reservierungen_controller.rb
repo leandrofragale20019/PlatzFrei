@@ -16,7 +16,9 @@ class ReservierungenController < ApplicationController
 
     @zeitfenster.reserviert_von!(current_benutzer)
     redirect_to reservierungen_path, notice: "Reservierung bestätigt."
-  rescue ActiveRecord::StaleObjectError, ActiveRecord::RecordNotUnique
+  rescue ActiveRecord::RecordNotUnique
+    # Einziger Konfliktpfad beim Erstellen: der partielle Unique-Index hat eine
+    # zeitgleiche zweite Reservierung für denselben Slot abgewiesen.
     redirect_to zeitfenster_zeigen_path(@zeitfenster), alert: konflikt_hinweis(@zeitfenster)
   end
 
@@ -24,6 +26,11 @@ class ReservierungenController < ApplicationController
     reservierung = current_benutzer.reservierungen.find(params[:id])
     reservierung.stornieren!(akteur: current_benutzer)
     redirect_to reservierungen_path, notice: "Reservierung storniert."
+  rescue ActiveRecord::StaleObjectError
+    # Optimistic Locking: die Reservierung wurde zwischenzeitlich bereits
+    # verändert (z.B. vom/von der Platzverantwortlichen durch eine Sperrung
+    # storniert). Kein Fehler für das Mitglied – der Slot ist ohnehin weg.
+    redirect_to reservierungen_path, notice: "Diese Reservierung wurde inzwischen bereits storniert (z.B. durch eine Platzsperrung)."
   end
 
   private

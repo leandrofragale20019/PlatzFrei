@@ -58,22 +58,49 @@ class SportplatzTest < ActiveSupport::TestCase
     assert_equal 0, Protokoll.joins(:reservierung).where(reservierungen: { zeitfenster_id: zeitfenster(:morgen_spaet).id }).count
   end
 
-  test "eine zeitgleiche Reservierung während einer Sperrung wird sicher abgelehnt (keine Geister-Reservierung)" do
-    # Anna hat die Detailseite bereits offen (veraltete lock_version-Referenz),
-    # bevor der Verantwortliche den Platz für genau dieses Zeitfenster sperrt.
-    zf_fuer_anna = Zeitfenster.find(zeitfenster(:morgen_spaet).id)
+  test "QA5: Stornierung (Mitglied) vs. Sperrung (Admin) derselben Reservierung – der spätere Schreibzugriff wirft StaleObjectError" do
+    # Anna hat ihre Reservierung auf "Meine Reservierungen" offen (veralteter
+    # lock_version-Stand). Zeitgleich sperrt der Verantwortliche den Platz und
+    # storniert dabei genau diese Reservierung – er schreibt zuerst.
+    anna_referenz = Reservierung.find(reservierungen(:anna_bucht_morgen_frueh).id)
 
     sportplaetze(:feld_eins).sperren!(
-      von: zeitfenster(:morgen_spaet).start,
-      bis: zeitfenster(:morgen_spaet).ende,
+      von: zeitfenster(:morgen_frueh).start,
+      bis: zeitfenster(:morgen_frueh).ende,
       akteur: benutzer(:max)
     )
 
+    # Annas verspäteter Stornierungs-Schreibzugriff arbeitet auf veralteten
+    # Daten und wird per Optimistic Locking (lock_version) erkannt.
     assert_raises(ActiveRecord::StaleObjectError) do
-      zf_fuer_anna.reserviert_von!(benutzer(:anna))
+      anna_referenz.stornieren!(akteur: benutzer(:anna))
     end
 
-    assert zeitfenster(:morgen_spaet).reload.gesperrt?
-    assert_nil zeitfenster(:morgen_spaet).aktive_reservierung
+    # Die Reservierung wurde durch die Sperrung genau einmal storniert.
+    reservierung = reservierungen(:anna_bucht_morgen_frueh).reload
+    assert_equal "storniert", reservierung.status
+    assert_equal 1, reservierung.protokolle.where(aktion: :geschlossen).count
+  end
+
+  test "QA5: storniert ein Mitglied zuerst, bricht eine gleichzeitige Sperrung nicht ab" do
+    # Anna storniert ihre Reservierung selbst; danach sperrt der Verantwortliche
+    # den Platz. sperren! findet keine aktive Reservierung mehr und läuft
+    # trotzdem sauber durch (Slot wird gesperrt, keine Doppel-Stornierung).
+    reservierungen(:anna_bucht_morgen_frueh).stornieren!(akteur: benutzer(:anna))
+
+    assert_nothing_raised do
+      sportplaetze(:feld_eins).sperren!(
+        von: zeitfenster(:morgen_frueh).start,
+        bis: zeitfenster(:morgen_frueh).ende,
+        akteur: benutzer(:max)
+      )
+    end
+
+    assert zeitfenster(:morgen_frueh).reload.gesperrt?
+
+    reservierung = reservierungen(:anna_bucht_morgen_frueh).reload
+    assert_equal "storniert", reservierung.status
+    assert reservierung.protokolle.exists?(aktion: :storniert)
+    assert_not reservierung.protokolle.exists?(aktion: :geschlossen)
   end
 end
