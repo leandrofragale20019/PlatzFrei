@@ -54,7 +54,7 @@ School project (Modul M233 – Multiuser-Applikation entwickeln). PlatzFrei lets
 
 - `Benutzer` (User) `1—n` `Reservierung`
 - `Sportplatz` (Facility) `1—n` `Zeitfenster` (Slot)
-- `Zeitfenster` `1—0/1` `Reservierung`; has `lock_version` (optimistic locking) and `gesperrt` (closed, bool)
+- `Zeitfenster` `1—0/1` `Reservierung`; `Zeitfenster` has `gesperrt` (closed, bool). `Reservierung` has `lock_version` — optimistic locking for the reservation-**update** path (cancel vs. closure), see Locking below. (`Zeitfenster` also carries a `lock_version` column, only relevant when the slot row itself is updated, e.g. closing it.)
 - `Reservierung` `1—n` `Protokoll` (Activity log)
 - `Warteliste` (Waitlist) `n—1` `Zeitfenster`
 
@@ -70,17 +70,18 @@ School project (Modul M233 – Multiuser-Applikation entwickeln). PlatzFrei lets
 
 **Quality attributes — treat these as acceptance criteria, not suggestions**
 
-1. **Data consistency:** if two members reserve the same slot concurrently, exactly one reservation is confirmed; the other gets an immediate error with a suggested next free slot. Implement via `lock_version` (optimistic locking) on `Zeitfenster`, not a pre-check-then-write.
+1. **Data consistency:** if two members reserve the same slot concurrently, exactly one reservation is confirmed; the other gets an immediate error with a suggested next free slot. This is an **INSERT** conflict, so it is enforced by a **partial unique index** on `reservierungen (zeitfenster_id) WHERE status = 'reserviert'` (the second INSERT raises `ActiveRecord::RecordNotUnique`) — not by `lock_version` and not by a pre-check-then-write. (`lock_version` only guards UPDATEs to an already-existing row and therefore cannot prevent a duplicate INSERT; the genuine optimistic-locking case lives on the reservation-update path, see QA5.)
 2. **Freshness:** a successfully reserved slot disappears from every other logged-in user's availability view within 5 seconds.
 3. **Performance:** the availability overview for one day with 15 facilities returns within 2 seconds under 20 concurrent requests.
 4. **Auditability:** every cancellation and facility closure is logged with timestamp and acting user, viewable by managers at any time.
-5. **Closure consistency:** if a manager closes a facility while a member concurrently creates/cancels a reservation for it, the data stays consistent — no double-release, no "ghost" reservation.
+5. **Closure consistency (the genuine optimistic-locking case):** if a manager closes a facility while a member concurrently **cancels** the same reservation, both operations `UPDATE` the same `reservierungen` row. `lock_version` (optimistic locking on `reservierungen`) makes the later writer lose with `ActiveRecord::StaleObjectError` instead of clobbering the row a second time. It is handled cleanly on both sides: the member sees a friendly notice, and the closure skips the already-cancelled reservation (per-reservation savepoint) instead of aborting. For the concurrent-**create** direction the closure path relies on the controller's `gesperrt?` check plus the QA1 unique index (no hard DB guarantee beyond that). No double-release, no "ghost" reservation.
 
 **Locking & transactions (explicit, don't simplify these away)**
 
-- Optimistic locking (`lock_version`) on `Zeitfenster`/`Reservierung` for the reservation-creation path.
-- Creating a `Reservierung` and its `Protokoll` entry must be one atomic transaction — if the conflict check fails, no log entry is written.
-- Closing a facility + auto-cancelling affected reservations + their log entries + notifications must be one atomic transaction.
+- **Double-booking on new reservations (INSERT)** is prevented by the **partial unique index** on `reservierungen (zeitfenster_id) WHERE status = 'reserviert'` — the second concurrent INSERT raises `ActiveRecord::RecordNotUnique`. This is the only conflict path when creating a reservation (`Zeitfenster#reserviert_von!`, caught in `ReservierungenController#create`). `lock_version` is **not** used here (it cannot protect an INSERT).
+- **Optimistic locking (`lock_version` on `reservierungen`)** guards the reservation-**update** path: cancelling a reservation (`Reservierung#stornieren!`) vs. closing the facility (`Sportplatz#sperren!`) both UPDATE the same row. The later write is rejected with `ActiveRecord::StaleObjectError` ("who writes first, wins"). Caught in `ReservierungenController#destroy` (member) and skipped per-reservation via a `requires_new` savepoint inside `Sportplatz#sperren!` (manager).
+- Creating a `Reservierung` and its `Protokoll` entry must be one atomic transaction — if the unique index rejects the INSERT, no log entry is written.
+- Closing a facility + auto-cancelling affected reservations + their log entries + notifications must be one atomic transaction; a per-reservation `StaleObjectError` (member cancelled concurrently) is caught and skipped, not allowed to abort the whole closure.
 - Pessimistic locking (SQLite `BEGIN IMMEDIATE`) is the discussed alternative for the closure path (bulk-affects a group of reservations) — worth a short comparison note in the code/README, not necessarily the final implementation.
 
 **Tech stack constraints:** Ruby on Rails + SQLite3 (as already set up in this repo). No additional infra (no Redis) unless explicitly requested.
@@ -94,8 +95,8 @@ Work through these steps **one at a time, in this order**. After finishing a ste
 3. **Benutzerprofil** — view/edit own profile; only the logged-in user may edit their own.
 4. **Benutzerverwaltung** — `Admin::` namespace, list/view users. No access restriction yet (that's step 5).
 5. **Benutzerrollen und Berechtigungen** — role-based access per the roles table above; lock down the `Admin::` namespace to `Platzverantwortliche/r` only.
-6. **Kernfunktion** — reservation creation/cancellation/waitlist flows. This is where quality attribute 1 (optimistic locking, concurrent reservation conflict) must be implemented and tested with a concurrency test, not just a happy-path test. UI dazu: Platzübersicht mit Kalenderansicht (Filter nach
+6. **Kernfunktion** — reservation creation/cancellation/waitlist flows. This is where quality attribute 1 (double-booking on concurrent creation) must be implemented via the partial unique index and tested with a concurrency test (two INSERTs → one `RecordNotUnique`), not just a happy-path test. UI dazu: Platzübersicht mit Kalenderansicht (Filter nach
    Sportart/Datum), Reservierungsdetail mit Bestätigungsdialog, "Meine
    Reservierungen" mit Stornier-Optio
-7. **Aktivitätsprotokoll** — `Protokoll` model + the two atomic transactions described above (reservation+log, closure+cancellations+notifications+log).
+7. **Aktivitätsprotokoll** — `Protokoll` model + the two atomic transactions described above (reservation+log, closure+cancellations+notifications+log). This is also where quality attribute 5 (optimistic locking on `reservierungen`: cancel vs. closure) lives, tested with a concurrency test (`StaleObjectError` on the later write).
 8. **Testing** — test suite specifically targeting the quality attributes above (concurrent reservation conflict, transaction integrity on closure, role-gated admin access, logging), not just CRUD happy paths.
