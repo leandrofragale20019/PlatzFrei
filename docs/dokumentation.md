@@ -1,11 +1,13 @@
 # Dokumentation PlatzFrei
 
-| | |
-|---|---|
-| **Modul** | M233 – Multiuser-Applikation entwickeln |
-| **Datum** | 24.09.2026 |
-| **Name** | Leandro Fragale |
-| **Klasse** | 24E |
+
+|            |                                         |
+| ---------- | --------------------------------------- |
+| **Modul**  | M233 – Multiuser-Applikation entwickeln |
+| **Datum**  | 25.09.2026                              |
+| **Name**   | Leandro Fragale                         |
+| **Klasse** | 24E                                     |
+
 
 ---
 
@@ -37,11 +39,13 @@ Dieses Problem betrifft alle Vereinsmitglieder wöchentlich und verschärft sich
 
 ## 2. Vision
 
-| | |
-|---|---|
-| **Domäne** | Vereinssport / Ressourcenverwaltung |
-| **Applikation** | PlatzFrei |
-| **Vision** | PlatzFrei ermöglicht es Vereinsmitgliedern, Sportplätze verbindlich und ohne Doppelbuchung zu reservieren, während Platzverantwortliche jederzeit den Überblick über Belegung, Sperrungen und Konflikte behalten. |
+
+|                 |                                                                                                                                                                                                                   |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Domäne**      | Vereinssport / Ressourcenverwaltung                                                                                                                                                                               |
+| **Applikation** | PlatzFrei                                                                                                                                                                                                         |
+| **Vision**      | PlatzFrei ermöglicht es Vereinsmitgliedern, Sportplätze verbindlich und ohne Doppelbuchung zu reservieren, während Platzverantwortliche jederzeit den Überblick über Belegung, Sperrungen und Konflikte behalten. |
+
 
 Wichtigste Anforderung der 1. MVP-Iteration ist die **konfliktfreie Reservierung eines Zeitfensters für einen Sportplatz**.
 
@@ -55,6 +59,8 @@ Wichtigste Anforderung der 1. MVP-Iteration ist die **konfliktfreie Reservierung
 6. Mitglied kann sich registrieren und anmelden
 7. Bei belegtem Zeitfenster kann sich ein Mitglied auf eine Warteliste setzen und wird bei Stornierung automatisch benachrichtigt
 
+
+
 ## 4. Qualitätsattribute
 
 **Datenkonsistenz:** Reservieren zwei Mitglieder gleichzeitig dasselbe Zeitfenster desselben Sportplatzes, wird genau eine Reservierung bestätigt; die zweite Person erhält sofort eine Fehlermeldung mit Vorschlag des nächsten freien Zeitfensters.
@@ -64,23 +70,30 @@ Wichtigste Anforderung der 1. MVP-Iteration ist die **konfliktfreie Reservierung
 3. **Nachvollziehbarkeit:** Jede Stornierung und jede Platzsperrung wird mit Zeitstempel und ausführender Person protokolliert und ist für Platzverantwortliche jederzeit einsehbar.
 4. **Konsistenz bei Sperrungen:** Sperrt eine Platzverantwortliche/ein Platzverantwortlicher einen Sportplatz, während ein Mitglied gleichzeitig eine Reservierung dafür storniert oder erstellt, bleibt der Datenbestand konsistent (keine doppelte Freigabe, keine „Geister-Reservierung").
 
+
+
 ## 5. Benutzerrollen und Berechtigungen
 
-| Rolle | Berechtigung |
-|---|---|
-| **Vereinsmitglied** | Sportplätze und Verfügbarkeit einsehen, Zeitfenster reservieren, eigene Reservierungen stornieren, sich auf die Warteliste setzen, eigenes Profil bearbeiten |
+
+| Rolle                     | Berechtigung                                                                                                                                                           |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vereinsmitglied**       | Sportplätze und Verfügbarkeit einsehen, Zeitfenster reservieren, eigene Reservierungen stornieren, sich auf die Warteliste setzen, eigenes Profil bearbeiten           |
 | **Platzverantwortlicher** | Alles wie Vereinsmitglied, zusätzlich: Sportplätze sperren und Sperrungen aufheben, alle Reservierungen einsehen und stornieren, Protokoll einsehen, Benutzer einsehen |
+
 
 Umsetzung: Rolle als Enum `rolle` (`mitglied` / `verantwortlicher`) auf `Benutzer`. Der gesamte Verwaltungsbereich (`Admin::`-Namespace) ist über `Admin::BaseController` (`require_login`, `require_verantwortlicher`) nur für Platzverantwortliche zugänglich. Mitglieder können nur eigene Reservierungen stornieren (Abfrage über `current_benutzer.reservierungen`, fremde → 404).
 
 ## 6. Locking und Transaktionen
 
-| Funktion | Konflikt | Mechanismus | Begründung |
-|---|---|---|---|
-| **Reservierung erstellen** | Zwei Mitglieder legen gleichzeitig eine Reservierung für dasselbe Zeitfenster an (INSERT) | Partieller Unique-Index auf `reservierungen (zeitfenster_id) WHERE status = 'reserviert'` → zweiter INSERT scheitert mit `RecordNotUnique` | Nur die Datenbank kann zwei gleichzeitige INSERTs zuverlässig gegeneinander absichern; eine vorherige Prüfung im Code hätte eine Race Condition. |
-| **Reservierung stornieren vs. Sportplatz sperren** | Mitglied und Platzverantwortliche/r ändern gleichzeitig dieselbe Reservierung (UPDATE) | Optimistic Locking über `lock_version` auf `reservierungen` → späterer Schreibzugriff erhält `StaleObjectError` | Optimistic Locking blockiert niemanden; Konflikte sind selten. |
-| **Reservierung + Protokoll** | Protokolleintrag ohne gültige Reservierung | Eine Transaktion | Scheitert die Reservierung, darf kein Protokolleintrag entstehen. |
-| **Sperrung + Autostornierung + Protokoll** | Sportplatz gesperrt, aber alte Reservierung bleibt gültig | Eine Transaktion; pro Reservierung ein Savepoint (`requires_new`) | Ein zeitgleich vom Mitglied storniertes Zeitfenster wird übersprungen, statt die ganze Sperrung abzubrechen. |
+
+| Funktion                                           | Konflikt                                                                                  | Mechanismus                                                                                                                                | Begründung                                                                                                                                       |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Reservierung erstellen**                         | Zwei Mitglieder legen gleichzeitig eine Reservierung für dasselbe Zeitfenster an (INSERT) | Partieller Unique-Index auf `reservierungen (zeitfenster_id) WHERE status = 'reserviert'` → zweiter INSERT scheitert mit `RecordNotUnique` | Nur die Datenbank kann zwei gleichzeitige INSERTs zuverlässig gegeneinander absichern; eine vorherige Prüfung im Code hätte eine Race Condition. |
+| **Reservierung stornieren vs. Sportplatz sperren** | Mitglied und Platzverantwortliche/r ändern gleichzeitig dieselbe Reservierung (UPDATE)    | Optimistic Locking über `lock_version` auf `reservierungen` → späterer Schreibzugriff erhält `StaleObjectError`                            | Optimistic Locking blockiert niemanden; Konflikte sind selten.                                                                                   |
+| **Reservierung + Protokoll**                       | Protokolleintrag ohne gültige Reservierung                                                | Eine Transaktion                                                                                                                           | Scheitert die Reservierung, darf kein Protokolleintrag entstehen.                                                                                |
+| **Sperrung + Autostornierung + Protokoll**         | Sportplatz gesperrt, aber alte Reservierung bleibt gültig                                 | Eine Transaktion; pro Reservierung ein Savepoint (`requires_new`); pro gesperrtem Zeitfenster genau ein Protokolleintrag                    | Ein zeitgleich vom Mitglied storniertes Zeitfenster wird übersprungen, statt die ganze Sperrung abzubrechen; die Sperrung wird trotzdem protokolliert. |
+| **Sperrung aufheben + Protokoll**                  | Zeitfenster wieder frei, aber Aufhebung nicht nachvollziehbar                             | Eine Transaktion; pro Zeitfenster ein Protokolleintrag (`entsperrt`)                                                                       | Aufhebung und Protokoll gelingen gemeinsam oder gar nicht.                                                                                       |
+
 
 **Alternative – pessimistisches Locking:** Für die Sperrung wäre ein pessimistischer Lock möglich. Er würde jedoch die gesamte Datenbank für die Dauer der Sperrung exklusiv sperren und den häufigeren Reservierungsablauf ausbremsen. Deshalb wurde er bewusst nicht eingesetzt.
 
@@ -138,45 +151,58 @@ Umsetzung: Rolle als Enum `rolle` (`mitglied` / `verantwortlicher`) auf `Benutze
 
 ## 10. Erreichter Stand
 
+
+
 ### Funktionale Anforderungen
 
-| Anforderung | Stand |
-|---|---|
-| Verfügbarkeit einsehen | Umgesetzt |
-| Zeitfenster reservieren | Umgesetzt |
+
+| Anforderung                             | Stand     |
+| --------------------------------------- | --------- |
+| Verfügbarkeit einsehen                  | Umgesetzt |
+| Zeitfenster reservieren                 | Umgesetzt |
 | Eigene Reservierung einsehen/stornieren | Umgesetzt |
-| Sportplatz sperren | Umgesetzt |
-| Alle Reservierungen verwalten | Umgesetzt |
-| Registrierung und Anmeldung | Umgesetzt |
-| Warteliste | Umgesetzt |
+| Sportplatz sperren                      | Umgesetzt |
+| Alle Reservierungen verwalten           | Umgesetzt |
+| Registrierung und Anmeldung             | Umgesetzt |
+| Warteliste                              | Umgesetzt |
+
 
 **Zusätzlich umgesetzt:** Benutzerprofil, Benutzerverwaltung, Protokollansicht, Aufheben von Sperrungen.
 
 ### Qualitätsattribute
 
-| Qualitätsattribut | Stand | Umsetzung |
-|---|---|---|
-| Datenkonsistenz | erfüllt | Partieller Unique-Index; Konfliktmeldung mit nächstem freiem Zeitfenster |
-| Aktualität | erfüllt | Server liefert bei jedem Seitenaufruf immer den aktuellen Datenbankstand aus |
-| Performance | erfüllt | Übersicht lädt ohne N+1-Abfragen |
-| Nachvollziehbarkeit | erfüllt | Protokoll erfasst Erstellung, Stornierung sowie Schliessung/Aufhebung durch Sperrung mit Zeitpunkt und Akteur – auch für Sperrungen ohne betroffene Reservierung |
-| Konsistenz bei Sperrungen | erfüllt | `lock_version` auf `reservierungen`, Savepoint pro Reservierung in `Sportplatz#sperren!` |
+
+| Qualitätsattribut         | Stand   | Umsetzung                                                                                                                                                        |
+| ------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Datenkonsistenz           | erfüllt | Partieller Unique-Index; Konfliktmeldung mit nächstem freiem Zeitfenster                                                                                         |
+| Aktualität                | erfüllt | Server liefert bei jedem Seitenaufruf immer den aktuellen Datenbankstand aus                                                                                     |
+| Performance               | erfüllt | Übersicht lädt ohne N+1-Abfragen                                                                                                                                 |
+| Nachvollziehbarkeit       | erfüllt | Protokoll erfasst Erstellung, Stornierung, Sperrung (`geschlossen`) und Aufhebung einer Sperrung (`entsperrt`) mit Zeitpunkt und Akteur – Sperrungen ohne betroffene Reservierung und Aufhebungen werden direkt am Zeitfenster protokolliert |
+| Konsistenz bei Sperrungen | erfüllt | `lock_version` auf `reservierungen`, Savepoint pro Reservierung in `Sportplatz#sperren!`                                                                         |
+
+
+
 
 ## 11. Begründung Abweichung
 
-| Antrag | Umsetzung | Begründung |
-|---|---|---|
-| Optimistisches Locking verhindert Doppelbuchungen bei der Erstellung | Doppelbuchung wird durch den partiellen Unique-Index verhindert; `lock_version` schützt nur den Fall Stornierung vs. Sperrung | Nach Feedback der Kursleitung korrigiert: `lock_version` greift nur bei UPDATEs bestehender Zeilen und kann zwei gleichzeitige INSERTs nicht verhindern. |
-| `lock_version` nur auf Zeitfenster (ERM) | Zusätzlich `lock_version` auf Reservierung | Der echte UPDATE-Konflikt (Stornierung vs. Sperrung) betrifft die Reservierung, nicht das Zeitfenster. |
-| Zeitfenster 1–0/1 Reservierung | 1–n, davon höchstens eine aktive | Stornierte Reservierungen bleiben für das Protokoll erhalten; die „0/1"-Regel gilt für aktive Reservierungen und wird durch den Unique-Index durchgesetzt. |
-| Stornieren „löscht" die Reservierung (Flow 2) | Status wird auf storniert gesetzt | Protokolleinträge verweisen auf die Reservierung; Löschen würde die Nachvollziehbarkeit (QA4) zerstören. |
-| Benachrichtigung bei Sperrung und Warteliste | Hinweis in der Applikation („Meine Reservierungen"), keine E-Mail | Keine zusätzliche Infrastruktur (Mail-Versand) für die 1. Iteration. |
-| Pessimistisches Locking für die Sperrung (als Alternative) | Nicht umgesetzt | SQLite kann nur die ganze Datenbank sperren; das würde den häufigeren Reservierungsablauf blockieren. |
+
+| Antrag                                                               | Umsetzung                                                                                                                     | Begründung                                                                                                                                                 |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Optimistisches Locking verhindert Doppelbuchungen bei der Erstellung | Doppelbuchung wird durch den partiellen Unique-Index verhindert; `lock_version` schützt nur den Fall Stornierung vs. Sperrung | Nach Feedback der Kursleitung korrigiert: `lock_version` greift nur bei UPDATEs bestehender Zeilen und kann zwei gleichzeitige INSERTs nicht verhindern.   |
+| `lock_version` nur auf Zeitfenster (ERM)                             | Zusätzlich `lock_version` auf Reservierung                                                                                    | Der echte UPDATE-Konflikt (Stornierung vs. Sperrung) betrifft die Reservierung, nicht das Zeitfenster.                                                     |
+| Zeitfenster 1–0/1 Reservierung                                       | 1–n, davon höchstens eine aktive                                                                                              | Stornierte Reservierungen bleiben für das Protokoll erhalten; die „0/1"-Regel gilt für aktive Reservierungen und wird durch den Unique-Index durchgesetzt. |
+| Stornieren „löscht" die Reservierung (Flow 2)                        | Status wird auf storniert gesetzt                                                                                             | Protokolleinträge verweisen auf die Reservierung; Löschen würde die Nachvollziehbarkeit (QA4) zerstören.                                                   |
+| Benachrichtigung bei Sperrung und Warteliste                         | Hinweis in der Applikation („Meine Reservierungen"), keine E-Mail                                                             | Keine zusätzliche Infrastruktur (Mail-Versand) für die 1. Iteration.                                                                                       |
+| Pessimistisches Locking für die Sperrung (als Alternative)           | Nicht umgesetzt                                                                                                               | SQLite kann nur die ganze Datenbank sperren; das würde den häufigeren Reservierungsablauf blockieren.                                                      |
+| Reservierung 1–n Protokoll (ERM)                                     | Protokoll gehört zu genau einer Reservierung **oder** einem Zeitfenster (`reservierung_id` / `zeitfenster_id`, beide nullable) | Sperrungen ohne betroffene Reservierung und das Aufheben von Sperrungen haben keine Reservierung, müssen für QA4 aber ebenfalls protokolliert werden.       |
+
+
+
 
 ## 12. Prüfung der Anforderungen und Ergebnisse
 
-Automatisierte Tests: `bin/rails test` → **101 Tests, 288 Assertions, 0 Failures, 0 Errors, 0 Skips** (Stand 24.09.2026).
+Automatisierte Tests: `bin/rails test` → **111 Tests, 329 Assertions, 0 Failures, 0 Errors, 0 Skips** (Stand 25.09.2026).
 
-Konventionen: `bin/rubocop` → 69 Dateien geprüft, keine Beanstandungen.
+Konventionen: `bin/rubocop` → 70 Dateien geprüft, keine Beanstandungen.
 
 Wie die obenstehende Tabelle zeigt, sind alle funktionalen Anforderungen sowie die Rollentrennung und alle fünf Qualitätsattribute automatisiert getestet und bestanden; ergänzend abgesichert durch RuboCop und den manuellen Testdurchlauf mit zwei Browsern für die Multiuser-Fälle.

@@ -33,7 +33,7 @@ class Admin::SperrungenController < Admin::BaseController
       return
     end
 
-    sportplatz.entsperren!(von: von, bis: bis)
+    sportplatz.entsperren!(von: von, bis: bis, akteur: current_benutzer)
     redirect_to new_admin_sperrung_path, notice: "Sperrung für #{sportplatz.name} wurde aufgehoben."
   end
 

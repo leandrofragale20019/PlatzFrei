@@ -23,6 +23,21 @@ class Admin::ProtokolleControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: "erstellt"
   end
 
+  test "index zeigt Einträge ohne Reservierung (Sperrung/Aufhebung) mit Sportplatz und Zeit" do
+    zf = zeitfenster(:morgen_gesperrt)
+    zf.protokolle.create!(akteur: benutzer(:max), aktion: :entsperrt, zeitpunkt: Time.current)
+    anmelden_als(benutzer(:max))
+
+    get admin_protokolle_path
+
+    assert_response :success
+    assert_select "tr" do
+      assert_select "td", text: "entsperrt"
+      assert_select "td", text: zf.sportplatz.name
+      assert_select "td", text: "–"
+    end
+  end
+
   private
 
   def anmelden_als(benutzer)

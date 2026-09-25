@@ -47,7 +47,7 @@ Demo-Daten erneut laden: `bin/rails db:seed` (idempotent). Datenbank komplett zu
 
 ```bash
 bin/dev          # Server starten (inkl. Tailwind-Watcher) -> http://localhost:3000
-bin/rails test   # Testsuite: 101 Tests, 288 Assertions, 0 Fehler
-bin/rubocop      # Code-Konventionen (Rails Omakase): 69 Dateien, keine Beanstandungen
+bin/rails test   # Testsuite: 111 Tests, 329 Assertions, 0 Fehler
+bin/rubocop      # Code-Konventionen (Rails Omakase): 70 Dateien, keine Beanstandungen
 bin/ci           # kompletter CI-Lauf (Setup, Rubocop, Audits, Brakeman, Tests, Seeds)
 ```

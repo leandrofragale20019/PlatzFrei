@@ -28,13 +28,13 @@
           <tr>
             <td class="whitespace-nowrap tabular-nums text-neutral-500"><%= protokoll.zeitpunkt.strftime("%d.%m.%Y %H:%M") %></td>
             <td>
-              <% aktion_variant = { "erstellt" => :success, "storniert" => :error, "geschlossen" => :neutral }.fetch(protokoll.aktion, :neutral) %>
+              <% aktion_variant = { "erstellt" => :success, "storniert" => :error, "geschlossen" => :neutral, "entsperrt" => :primary }.fetch(protokoll.aktion, :neutral) %>
               <%= render "shared/badge", label: protokoll.aktion, variant: aktion_variant %>
             </td>
             <td class="cell-strong"><%= protokoll.akteur.name %></td>
-            <td><%= protokoll.reservierung.benutzer.name %></td>
-            <td><%= protokoll.reservierung.zeitfenster.sportplatz.name %></td>
-            <td class="whitespace-nowrap tabular-nums text-neutral-500"><%= protokoll.reservierung.zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></td>
+            <td><%= protokoll.reservierung&.benutzer&.name || "–" %></td>
+            <td><%= protokoll.betroffenes_zeitfenster.sportplatz.name %></td>
+            <td class="whitespace-nowrap tabular-nums text-neutral-500"><%= protokoll.betroffenes_zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></td>
           </tr>
         <% end %>
       </tbody>
@@ -45,15 +45,15 @@
     <% @protokolle.each do |protokoll| %>
       <li class="tile">
         <div class="flex items-center justify-between gap-2">
-          <% aktion_variant = { "erstellt" => :success, "storniert" => :error, "geschlossen" => :neutral }.fetch(protokoll.aktion, :neutral) %>
+          <% aktion_variant = { "erstellt" => :success, "storniert" => :error, "geschlossen" => :neutral, "entsperrt" => :primary }.fetch(protokoll.aktion, :neutral) %>
           <%= render "shared/badge", label: protokoll.aktion, variant: aktion_variant %>
           <span class="text-xs text-neutral-400 tabular-nums"><%= protokoll.zeitpunkt.strftime("%d.%m.%Y %H:%M") %></span>
         </div>
         <dl class="mt-3 space-y-1 text-sm">
           <div class="flex justify-between gap-4"><dt class="text-neutral-500">Akteur</dt><dd class="font-medium text-neutral-800"><%= protokoll.akteur.name %></dd></div>
-          <div class="flex justify-between gap-4"><dt class="text-neutral-500">Mitglied</dt><dd class="text-neutral-700"><%= protokoll.reservierung.benutzer.name %></dd></div>
-          <div class="flex justify-between gap-4"><dt class="text-neutral-500">Sportplatz</dt><dd class="text-neutral-700"><%= protokoll.reservierung.zeitfenster.sportplatz.name %></dd></div>
-          <div class="flex justify-between gap-4"><dt class="text-neutral-500">Zeit</dt><dd class="text-neutral-700 tabular-nums"><%= protokoll.reservierung.zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-neutral-500">Mitglied</dt><dd class="text-neutral-700"><%= protokoll.reservierung&.benutzer&.name || "–" %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-neutral-500">Sportplatz</dt><dd class="text-neutral-700"><%= protokoll.betroffenes_zeitfenster.sportplatz.name %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-neutral-500">Zeit</dt><dd class="text-neutral-700 tabular-nums"><%= protokoll.betroffenes_zeitfenster.start.strftime("%d.%m.%Y %H:%M") %></dd></div>
         </dl>
       </li>
     <% end %>

@@ -50,12 +50,12 @@ School project (Modul M233 – Multiuser-Applikation entwickeln). PlatzFrei lets
 | `Vereinsmitglied` (member) | view facilities/availability, reserve a slot, cancel own reservations, join a waitlist |
 | `Platzverantwortliche/r` (facility manager) | everything a member can do, plus: create/close facilities, view & cancel any reservation, view the activity log |
 
-**Data model** (see full ERM with attributes in `docs/Projektantrag.md` if present — keep migrations in sync with it)
+**Data model** (see ERM in `docs/dokumentation.md` §7 and deviations in §11 — keep migrations in sync with it)
 
 - `Benutzer` (User) `1—n` `Reservierung`
 - `Sportplatz` (Facility) `1—n` `Zeitfenster` (Slot)
 - `Zeitfenster` `1—0/1` `Reservierung`; `Zeitfenster` has `gesperrt` (closed, bool). `Reservierung` has `lock_version` — optimistic locking for the reservation-**update** path (cancel vs. closure), see Locking below. (`Zeitfenster` also carries a `lock_version` column, only relevant when the slot row itself is updated, e.g. closing it.)
-- `Reservierung` `1—n` `Protokoll` (Activity log)
+- `Reservierung` `1—n` `Protokoll` (Activity log); `Zeitfenster` `1—n` `Protokoll` for entries without a reservation (closure of a free slot, lifting a closure — aktion `geschlossen` / `entsperrt`). Each `Protokoll` references exactly one of `reservierung_id` / `zeitfenster_id` (both nullable, validated XOR).
 - `Warteliste` (Waitlist) `n—1` `Zeitfenster`
 
 **Functional requirements, priority order**

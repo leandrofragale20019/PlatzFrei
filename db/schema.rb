@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_085540) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_25_074637) do
   create_table "benutzer", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -25,11 +25,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_085540) do
     t.integer "akteur_id", null: false
     t.string "aktion", null: false
     t.datetime "created_at", null: false
-    t.integer "reservierung_id", null: false
+    t.integer "reservierung_id"
     t.datetime "updated_at", null: false
+    t.integer "zeitfenster_id"
     t.datetime "zeitpunkt", null: false
     t.index ["akteur_id"], name: "index_protokolle_on_akteur_id"
     t.index ["reservierung_id"], name: "index_protokolle_on_reservierung_id"
+    t.index ["zeitfenster_id"], name: "index_protokolle_on_zeitfenster_id"
   end
 
   create_table "reservierungen", force: :cascade do |t|
@@ -73,6 +75,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_085540) do
 
   add_foreign_key "protokolle", "benutzer", column: "akteur_id"
   add_foreign_key "protokolle", "reservierungen"
+  add_foreign_key "protokolle", "zeitfenster"
   add_foreign_key "reservierungen", "benutzer"
   add_foreign_key "reservierungen", "zeitfenster"
   add_foreign_key "wartelisten", "benutzer"

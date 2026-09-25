@@ -23,4 +23,28 @@ class ProtokollTest < ActiveSupport::TestCase
     assert_equal benutzer(:max), protokoll.akteur
     assert_not_equal protokoll.akteur, protokoll.reservierung.benutzer
   end
+
+  test "kann sich statt auf eine Reservierung direkt auf ein Zeitfenster beziehen" do
+    protokoll = Protokoll.new(zeitfenster: zeitfenster(:morgen_spaet), akteur: benutzer(:max), aktion: :geschlossen, zeitpunkt: Time.current)
+
+    assert protokoll.valid?
+    assert_equal zeitfenster(:morgen_spaet), protokoll.betroffenes_zeitfenster
+  end
+
+  test "betroffenes_zeitfenster kommt bei Reservierungs-Einträgen von der Reservierung" do
+    assert_equal zeitfenster(:morgen_frueh), protokolle(:anna_reservierung_erstellt).betroffenes_zeitfenster
+  end
+
+  test "erfordert eine Reservierung oder ein Zeitfenster" do
+    protokoll = Protokoll.new(akteur: benutzer(:max), aktion: :geschlossen, zeitpunkt: Time.current)
+
+    assert_not protokoll.valid?
+  end
+
+  test "darf sich nicht gleichzeitig auf Reservierung und Zeitfenster beziehen" do
+    protokoll = protokolle(:anna_reservierung_erstellt)
+    protokoll.zeitfenster = zeitfenster(:morgen_frueh)
+
+    assert_not protokoll.valid?
+  end
 end

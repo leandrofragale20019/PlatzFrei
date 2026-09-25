@@ -50,6 +50,7 @@ class Admin::SperrungenControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to new_admin_sperrung_path
     assert_not zf.reload.gesperrt?
+    assert_equal benutzer(:max), zf.protokolle.entsperrt.sole.akteur
   end
 
   test "destroy als mitglied ist verboten" do

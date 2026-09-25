@@ -2,6 +2,7 @@ class Zeitfenster < ApplicationRecord
   belongs_to :sportplatz
   has_many :reservierungen, dependent: :restrict_with_error
   has_many :wartelisten, dependent: :destroy
+  has_many :protokolle, dependent: :restrict_with_error
 
   validates :start, presence: true
   validates :ende, presence: true
