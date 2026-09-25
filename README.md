@@ -5,30 +5,49 @@ Modul **M233 – Multiuser-Applikation entwickeln** · Autor: **Leandro Fragale*
 
 Vereinsmitglieder reservieren Zeitfenster auf Sportplätzen ohne Doppelbuchung; Platzverantwortliche behalten den Überblick über Belegung, Sperrungen und Konflikte.
 
-## Dokumentation
+Die vollständige fachliche Dokumentation (Problemstellung, Vision, Anforderungen, Qualitätsattribute, ERM, Breadboards, Wireframes, Locking-Konzept, erreichter Stand) liegt in **[docs/dokumentation.md](docs/dokumentation.md)**.
 
-- **[Anleitung.md](Anleitung.md)** – Setup, Start und vollständiges Testprotokoll (automatisiert + manuell).
-- **[Kompetenzen.md](Kompetenzen.md)** – Abgleich mit dem Bewertungsraster (was ist umgesetzt, wie testen, Status).
-- **[CLAUDE.md](CLAUDE.md)** – Architektur, Domäne, Locking- & Transaktionsstrategie.
-- **[docs/projektantrag_sportplatz.md](docs/projektantrag_sportplatz.md)** – Projektantrag inkl. Domänenmodell (ERM).
+## Voraussetzungen
 
-## Schnellstart
+| | |
+|---|---|
+| Sprache | Ruby **4.0.6** |
+| Framework | Ruby on Rails **8.1** |
+| Datenbank | **SQLite3** (Datei-basiert, keine Server-Installation nötig) |
+| Frontend | Hotwire (Turbo/Stimulus) + Import Maps + Tailwind CSS – **kein Node/npm nötig** |
+
+Es wird keine zusätzliche Infrastruktur benötigt (kein Redis, keine externen Dienste).
+
+## Installation & Konfiguration
 
 ```bash
-bin/setup --skip-server   # Gems, Datenbank und Demo-Daten
+bin/setup --skip-server   # Gems installieren, Datenbank anlegen, Demo-Daten laden
 bin/dev                   # Server starten -> http://localhost:3000
 ```
 
-Demo-Konten (Passwort `geheim123`): `mitglied@platzfrei.ch` (Mitglied) · `admin@platzfrei.ch` (Platzverantwortliche/r).
+Keine weitere Konfiguration nötig; die App läuft mit den Standardwerten aus `config/`.
 
-## Tech-Stack
+## Datenbankaufbau & Demo-Daten
 
-Ruby 4.0.6 · Rails 8.1 · SQLite3 · Hotwire (Turbo/Stimulus) · Import Maps · Tailwind CSS · **kein Node/Redis**.
+`bin/setup` (bzw. `bin/rails db:seed`) legt automatisch an:
 
-## Tests
+- 5 Sportplätze (Fussballfeld, Badmintonhalle, Tennisplatz 1, Basketballplatz, Volleyballfeld), je mit 4 Zeitfenstern pro Tag über die nächsten 7 Tage
+- Zwei Demo-Konten (siehe unten)
+
+Demo-Daten erneut laden: `bin/rails db:seed` (idempotent). Datenbank komplett zurücksetzen: `bin/setup --reset`.
+
+### Demo-Konten
+
+| Rolle | E-Mail | Passwort |
+|---|---|---|
+| Vereinsmitglied | `mitglied@platzfrei.ch` | `geheim123` |
+| Platzverantwortliche/r | `admin@platzfrei.ch` | `geheim123` |
+
+## Start- und Testbefehle
 
 ```bash
-bin/rails test   # 94 Tests (Models + Controller), inkl. Nebenläufigkeit/Locking
-bin/rubocop      # Code-Konventionen (Rails Omakase)
+bin/dev          # Server starten (inkl. Tailwind-Watcher) -> http://localhost:3000
+bin/rails test   # Testsuite: 101 Tests, 288 Assertions, 0 Fehler
+bin/rubocop      # Code-Konventionen (Rails Omakase): 69 Dateien, keine Beanstandungen
 bin/ci           # kompletter CI-Lauf (Setup, Rubocop, Audits, Brakeman, Tests, Seeds)
 ```
