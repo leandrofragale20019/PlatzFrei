@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.3", ">= 8.1.3.1"
+gem "rails", "~> 8.1.4"
 # json 3.x switched JSON.parse to keyword-only options, which breaks
 # ActiveSupport::JSON.decode's positional-hash call (used to decrypt session/
 # signed cookies) on this Ruby version. Pin to the last compatible 2.x line.
